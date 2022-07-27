@@ -105,7 +105,7 @@
 
                         <td>
                             <div>
-                                <a href="/admin/control/hero/${hero.name}/edit">
+                                <a href="/admin/control/hero/${hero.name}/upd">
                                     <button class="btn btn-primary" type="submit">Edit</button>
                                 </a>
                             </div>
