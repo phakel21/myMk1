@@ -65,6 +65,7 @@
             <div class="col-auto">
                 <form:password path="passwordRepeat" id="passwordRepeat" class="form-control"/>
             </div>
+            <form:errors path="passwordRepeat"/>
         </div>
 
         <div class="col-auto my-margin">

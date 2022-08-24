@@ -1,6 +1,7 @@
 package com.Rpg.dto;
 
 import com.Rpg.entity.Hero;
+import com.Rpg.entity.MyUser;
 import com.Rpg.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,4 +18,8 @@ public class MyUserDTO {
     private String passwordRepeat;
     private Role role;
     private Hero hero;
+
+    MyUserDTO(MyUser myUser) {
+        this.login = myUser.getLogin();
+    }
 }

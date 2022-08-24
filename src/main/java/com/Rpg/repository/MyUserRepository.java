@@ -15,4 +15,5 @@ public interface MyUserRepository extends JpaRepository<MyUser, Long> {
 
     Optional<MyUser> findMyUserByLogin(String name);
 
+
 }

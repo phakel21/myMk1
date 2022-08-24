@@ -27,7 +27,7 @@
                 <a href="" class="nav-item nav-link ">${location.name}</a>
             </div>
             <div class="navbar-nav">
-                <a href="/${hero.myUser.login}/hero/${hero.name}/lobby" class="nav-item nav-link ">Lobby</a>
+                <a href="/${hero.myUserDTO.login}/hero/${hero.name}/lobby" class="nav-item nav-link ">Lobby</a>
             </div>
             <div class="navbar-nav ms-auto">
                 <sec:authorize access="isAuthenticated()">
@@ -47,7 +47,7 @@
 
     <div class="d-flex justify-content-start" style="position: absolute;">
         <div style=" z-index: 2;position: relative;">
-            <p>${hero.myCharacter.name}</p>
+            <p>${hero.myCharacterDTO.name}</p>
             <p>${hero.currentHp}</p>
         </div>
     </div>
@@ -61,7 +61,7 @@
 
     <div style="position: absolute;">
         <img class="char_div" style="z-index: 2; position: relative; top: 50px;"
-             src="/images/myCharacters/${hero.myCharacter.image}">
+             src="/images/myCharacters/${hero.myCharacterDTO.image}">
     </div>
 
     <div class="d-flex justify-content-end">

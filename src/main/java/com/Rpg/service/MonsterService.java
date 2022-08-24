@@ -7,27 +7,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public interface MonsterService {
 
     void create(MonsterDTO monsterDTO, MultipartFile multipartFile) throws IOException;
 
-    MonsterDTO getByName(String name);
+    Monster getMonsterByName(String name);
 
     List<MonsterDTO> getAll();
-
-    void deleteByName(String name);
-
-    void kick(HeroDTO hero, MonsterDTO monster);
-
-    MonsterDTO monsterInMemory(List<MonsterDTO> monsterDTOS);
-
-    List<MonsterDTO> get(List<Monster> monster);
-
-    void saving(MonsterDTO monsterDTO);
-
-    void monstersAlive(List<MonsterDTO> monsterDTOS);
 
     void updateName(String name, String updateName);
 
@@ -41,5 +28,17 @@ public interface MonsterService {
 
     void updateImage(String name, MultipartFile multipartFile) throws IOException;
 
-    MonsterDTO getOne(String name);
+    void deleteByName(String name);
+
+    void kick(HeroDTO hero, MonsterDTO monster);
+
+    MonsterDTO monsterInMemory(List<MonsterDTO> monsterDTOS);
+
+    void saving(MonsterDTO monsterDTO);
+
+    void monstersAlive(List<MonsterDTO> monsterDTOS);
+
+    MonsterDTO getMonsterDTOByName(String name);
+
+    List<MonsterDTO> getMonstersByLocationName(String name);
 }

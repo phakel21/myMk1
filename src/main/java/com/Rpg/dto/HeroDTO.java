@@ -1,22 +1,29 @@
 package com.Rpg.dto;
 
-import com.Rpg.entity.MyCharacter;
-import com.Rpg.entity.MyUser;
+import com.Rpg.entity.Hero;
 import lombok.*;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class HeroDTO {
-        private Long id;
+
+    private Long id;
 
     private String name;
 
     private Integer currentHp;
 
-    private MyCharacter myCharacter;
+    private MyCharacterDTO myCharacterDTO;
 
-    private MyUser myUser;
+    private MyUserDTO myUserDTO;
 
+    public HeroDTO(Hero hero) {
+        this.name = hero.getName();
+        this.currentHp = hero.getCurrentHp();
+        this.myCharacterDTO = new MyCharacterDTO(hero.getMyCharacter());
+        this.myUserDTO = new MyUserDTO(hero.getMyUser());
+    }
 }

@@ -17,7 +17,7 @@
 <%--<div class="row">--%>
     <%--<div  class="col-sm-12">--%>
         <%--<table class="table table-bordered">--%>
-            <%--<td>${myCharacter.name}</td>--%>
+            <%--<td>${myCharacterDTO.name}</td>--%>
         <%--</table>--%>
     <%--</div>--%>
 <%--</div>--%>

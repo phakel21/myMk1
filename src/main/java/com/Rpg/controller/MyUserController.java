@@ -21,7 +21,7 @@ public class MyUserController {
         this.myUserService = myUserService;
     }
 
-    @ModelAttribute("userDTO")
+    @ModelAttribute("myUserDTO")
     public MyUserDTO getModel() {
         return new MyUserDTO();
     }
@@ -37,7 +37,7 @@ public class MyUserController {
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute("userDTO") MyUserDTO myUserDTO, BindingResult bindingResult) {
+    public String registration(@ModelAttribute("myUserDTO") MyUserDTO myUserDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) return "registration";
         myUserService.registration(myUserDTO);
         return "redirect:/login";

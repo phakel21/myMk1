@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +31,24 @@ public class MyUserServiceImplement implements MyUserService, UserDetailsService
         this.passwordEncoder = passwordEncoder;
     }
 
+    //CRUD methods work with repository
+
+    private MyUser save(MyUser MyUser) {
+        return myUserRepository.save(MyUser);
+    }
+
+    private MyUser findOne(String name) {
+        return myUserRepository.findByLogin(name);
+    }
+
+    private List<MyUser> findAll() {
+        return myUserRepository.findAll();
+    }
+
+    void delete(String name){ myUserRepository.deleteByLogin(name);}
+
+    //mappers
+
     private MyUser map(MyUserDTO myUserDTO) {
         MyUser MyUser = new MyUser();
         MyUser.setLogin(myUserDTO.getLogin());
@@ -39,6 +56,7 @@ public class MyUserServiceImplement implements MyUserService, UserDetailsService
     }
 
     private MyUserDTO map(MyUser MyUser) {
+        if(MyUser == null) return null;
         MyUserDTO myUserDTO = new MyUserDTO();
         myUserDTO.setLogin(MyUser.getLogin());
         return myUserDTO;
@@ -52,9 +70,11 @@ public class MyUserServiceImplement implements MyUserService, UserDetailsService
         return myUserDTOS;
     }
 
+    //my methods
+
     @Override
     public MyUser registration(MyUserDTO myUserDTO) {
-        if (!registrationValidation(myUserDTO)) ;
+        if (!registrationValidation(myUserDTO));
         MyUser MyUser = new MyUser();
         MyUser.setPassword(passwordEncoder.encode(myUserDTO.getPassword()));
         MyUser.setLogin(myUserDTO.getLogin());
@@ -63,17 +83,15 @@ public class MyUserServiceImplement implements MyUserService, UserDetailsService
         return save(MyUser);
     }
 
-    private MyUser save(MyUser MyUser) {
-        return myUserRepository.save(MyUser);
-    }
-
     @Override
-    public MyUserDTO getByName(String name) {
-        return map(findOne(name));
-    }
+    public MyUser getMyUserByName(String name) {
+        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(name);
 
-    private MyUser findOne(String name) {
-        return myUserRepository.findByLogin(name);
+        if (optionalMyUser.isPresent()) {
+            return optionalMyUser.get();
+        }
+
+        throw new MyUserNotFoundException("User: " + name + " not found");
     }
 
     @Override
@@ -81,13 +99,13 @@ public class MyUserServiceImplement implements MyUserService, UserDetailsService
         return map(findAll());
     }
 
-    private List<MyUser> findAll() {
-        return myUserRepository.findAll();
-    }
-
     @Override
     public void deleteByName(String name) {
-        myUserRepository.deleteByLogin(name);
+        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(name);
+        if (!optionalMyUser.isPresent()) {
+            throw new MyUserNotFoundException("User with name: " + name + " not found");
+        }
+        delete(name);
     }
 
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
@@ -108,25 +126,13 @@ public class MyUserServiceImplement implements MyUserService, UserDetailsService
     }
 
     @Override
-    public MyUser get(String name) {
-        return findOne(name);
+    public MyUserDTO getMyUserDTOByName(String name) {
+        return map(getMyUserByName(name));
     }
 
     @Override
-    public MyUserDTO hetOne(String name) {
-        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(name);
-        if (optionalMyUser.isPresent()){
-            return map(optionalMyUser.get());
-        }
-        throw new MyUserNotFoundException("User: "+ name +" not found");
-    }
-
-    @Override
-    public MyUser getOne(String name) {
-        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(name);
-        if (optionalMyUser.isPresent()){
-            return optionalMyUser.get();
-        }
-        throw new MyUserNotFoundException("User: "+ name +" not found");
+    public MyUserDTO getMyUserDTOforUpdate(String updateUser) {
+        Optional<MyUser> myUserOptional = myUserRepository.findMyUserByLogin(updateUser);
+        return myUserOptional.map(this::map).orElse(null);
     }
 }

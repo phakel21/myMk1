@@ -2,17 +2,17 @@ package com.Rpg.controller;
 
 import com.Rpg.dto.LocationDTO;
 import com.Rpg.dto.MonsterDTO;
-import com.Rpg.entity.Monster;
 import com.Rpg.service.LocationService;
 import com.Rpg.service.MonsterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/admin/control")
@@ -35,78 +35,78 @@ public class AdminMonsterController {
     }
 
 
-    @GetMapping("/monster")
+    @GetMapping("/monsters")
     public String getAll(Model model) {
         model.addAttribute("locations", locationService.getAll());
         model.addAttribute("monsters", monsterService.getAll());
-        return "getMonsters";
+        return "adminMonsterCreateAndGetAll";
     }
 
-    @PostMapping("/monster")
+    @PostMapping("/monsters")
     public String create(@ModelAttribute("monster") MonsterDTO monsterDTO,
                          @RequestParam(name = "chooseLocation") String chooseLocation,
                          @RequestParam("file") MultipartFile multipartFile) throws IOException {
-        monsterDTO.setLocation(locationService.get(chooseLocation));
+        monsterDTO.setLocation(locationService.getLocationByName(chooseLocation));
         monsterService.create(monsterDTO, multipartFile);
-        return "redirect:/admin/control/monster";
+        return "redirect:/admin/control/monsters";
     }
 
     @GetMapping("/monster/{name}/delete")
     public String deleteByName(@PathVariable("name") String name) {
         monsterService.deleteByName(name);
-        return "redirect:/admin/control/monster";
+        return "redirect:/admin/control/monsters";
     }
 
-    @GetMapping("/monster/{name}/edit")
+    @GetMapping("/monster/{name}/update")
     public String getOne(Model model,
                          @PathVariable("name") String name) {
-        MonsterDTO monsterDTO = monsterService.getOne(name);
+        MonsterDTO monsterDTO = monsterService.getMonsterDTOByName(name);
         model.addAttribute("monster", monsterDTO);
         List<LocationDTO> locationDTOS = locationService.getAll();
         model.addAttribute("locations", locationDTOS);
-        return "updateAdminMonster";
+        return "adminMonsterUpdateAndGetOne";
     }
 
-    @PostMapping("/monster/{name}/edit/name")
+    @PostMapping("/monster/{name}/update/name")
     public String updateName(@PathVariable("name") String name,
                              @RequestParam("updateName") String updateName) {
         monsterService.updateName(name, updateName);
-        return "redirect:/admin/control/monster/" + updateName + "/edit";
+        return "redirect:/admin/control/monster/" + updateName + "/update";
     }
 
-    @PostMapping("/monster/{name}/edit/hp")
+    @PostMapping("/monster/{name}/update/hp")
     public String updateHp(@PathVariable("name") String name,
                            @RequestParam("updateHp") Integer updateHp) {
         monsterService.updateHp(name, updateHp);
-        return "redirect:/admin/control/monster/" + name + "/edit";
+        return "redirect:/admin/control/monster/" + name + "/update";
     }
 
-    @PostMapping("/monster/{name}/edit/mp")
+    @PostMapping("/monster/{name}/update/mp")
     public String updateMp(@PathVariable("name") String name,
                            @RequestParam("updateMp") Integer updateMp) {
         monsterService.updateMp(name, updateMp);
-        return "redirect:/admin/control/monster/" + name + "/edit";
+        return "redirect:/admin/control/monster/" + name + "/update";
     }
 
-    @PostMapping("/monster/{name}/edit/power")
+    @PostMapping("/monster/{name}/update/power")
     public String updatePower(@PathVariable("name") String name,
                               @RequestParam("updatePower") Integer updateLocation) {
         monsterService.updatePower(name, updateLocation);
-        return "redirect:/admin/control/monster/" + name + "/edit";
+        return "redirect:/admin/control/monster/" + name + "/update";
     }
 
-    @PostMapping("/monster/{name}/edit/location")
+    @PostMapping("/monster/{name}/update/location")
     public String updateLocation(@PathVariable("name") String name,
                                  @RequestParam("updateLocation") String updateLocation) {
         monsterService.updateLocation(name, updateLocation);
-        return "redirect:/admin/control/monster/" + name + "/edit";
+        return "redirect:/admin/control/monster/" + name + "/update";
     }
 
-    @PostMapping("/monster/{name}/edit/image")
+    @PostMapping("/monster/{name}/update/image")
     public String updateImage(@PathVariable("name") String name,
                               @RequestParam("updateImage") MultipartFile multipartFile) throws IOException {
         monsterService.updateImage(name, multipartFile);
-        return "redirect:/admin/control/monster/" + name + "/edit";
+        return "redirect:/admin/control/monster/" + name + "/update";
     }
 
 }

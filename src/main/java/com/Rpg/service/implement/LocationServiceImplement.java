@@ -1,11 +1,14 @@
 package com.Rpg.service.implement;
 
+import com.Rpg.config.exception.location.LocationExistException;
 import com.Rpg.config.exception.location.LocationNotFoundException;
 import com.Rpg.dto.LocationDTO;
 import com.Rpg.entity.Location;
 import com.Rpg.repository.LocationRepository;
 import com.Rpg.service.ImageService;
 import com.Rpg.service.LocationService;
+import com.Rpg.validator.location.create.LocationCreateValidator;
+import com.Rpg.validator.location.update.LocationUpdateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,16 +28,44 @@ public class LocationServiceImplement implements LocationService {
 
     private ImageService imageService;
 
+    private List<LocationCreateValidator> locationCreateValidators;
+
+    private List<LocationUpdateValidator> locationUpdateValidators;
+
     @Autowired
-    public LocationServiceImplement(LocationRepository locationRepository, ImageService imageService) {
+    public LocationServiceImplement(LocationRepository locationRepository,
+                                    ImageService imageService,
+                                    List<LocationCreateValidator> locationCreateValidators,
+                                    List<LocationUpdateValidator> locationUpdateValidators) {
         this.locationRepository = locationRepository;
         this.imageService = imageService;
+        this.locationCreateValidators = locationCreateValidators;
+        this.locationUpdateValidators = locationUpdateValidators;
     }
+
+    //CRUD methods work with repository
+
+    private void save(Location location) {
+        locationRepository.save(location);
+    }
+
+    private Location findOne(String name) {
+        return locationRepository.findByName(name);
+    }
+
+    private List<Location> findAll() {
+        return locationRepository.findAll();
+    }
+
+    private void delete(String name) {
+        locationRepository.deleteByName(name);
+    }
+
+    //mappers
 
     private Location map(LocationDTO locationDTO) {
         Location location = new Location();
         location.setName(locationDTO.getName());
-        location.setMonsters(locationDTO.getMonsters());
         location.setImage(locationDTO.getImage());
         return location;
     }
@@ -42,7 +73,6 @@ public class LocationServiceImplement implements LocationService {
     private LocationDTO map(Location location) {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setName(location.getName());
-        locationDTO.setMonsters(location.getMonsters());
         locationDTO.setImage(location.getImage());
         return locationDTO;
     }
@@ -55,25 +85,32 @@ public class LocationServiceImplement implements LocationService {
         return locationDTOS;
     }
 
+    //methods for controller
+
     @Override
     public void create(LocationDTO locationDTO, MultipartFile multipartFile) throws IOException {
+
         Location location = map(locationDTO);
+
+        checkLocationExist(location.getName());
+
+        for (LocationCreateValidator locationCreateValidator : locationCreateValidators) {
+            locationCreateValidator.validate(location);
+        }
+
         String resultFileName = imageService.saveFile(locationsPath, multipartFile);
         location.setImage(resultFileName);
+
         save(location);
     }
 
-    private void save(Location location) {
-        locationRepository.save(location);
-    }
-
     @Override
-    public LocationDTO getByName(String name) {
-        return map(findOne(name));
-    }
-
-    private Location findOne(String name) {
-        return locationRepository.findByName(name);
+    public Location getLocationByName(String name) {
+        Optional<Location> optionalLocation = locationRepository.findLocationByName(name);
+        if (optionalLocation.isPresent()) {
+            return optionalLocation.get();
+        }
+        throw new LocationNotFoundException("location: " + name + " not found");
     }
 
     @Override
@@ -81,47 +118,53 @@ public class LocationServiceImplement implements LocationService {
         return map(findAll());
     }
 
-    private List<Location> findAll() {
-        return locationRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public void deleteByName(String name) {
-        if (imageService.deleteFile(locationsPath, findOne(name).getImage()))
-            locationRepository.deleteByName(name);
-    }
-
-    @Override
-    public Location get(String name) {
-        return findOne(name);
+    private void update(Location location) {
+        for (LocationUpdateValidator locationUpdateValidator : locationUpdateValidators) {
+            locationUpdateValidator.validate(location);
+        }
+        save(location);
     }
 
     @Override
     public void updateName(String name, String updateName) {
+        checkLocationExist(updateName);
         Location location = findOne(name);
         location.setName(updateName);
-        save(location);
+        update(location);
     }
 
     @Override
     public void updateImage(String name, MultipartFile multipartFile) throws IOException {
         Location location = findOne(name);
-        if (location.getImage() != null)
-            imageService.deleteFile(locationsPath, location.getImage());
+        imageService.deleteFile(locationsPath, location.getImage());
         location.setImage(imageService.saveFile(locationsPath, multipartFile));
-        save(location);
+        update(location);
     }
 
     @Override
-    public LocationDTO getOne(String name){
+    @Transactional
+    public void deleteByName(String name) {
+
         Optional<Location> optionalLocation = locationRepository.findLocationByName(name);
-        if(optionalLocation.isPresent()){
-            return map(optionalLocation.get());
+
+        if (!optionalLocation.isPresent()) {
+            throw new LocationNotFoundException("Location not found");
         }
-        throw new LocationNotFoundException("location: "+ name +" not found");
+
+        imageService.deleteFile(locationsPath, findOne(name).getImage());
+        delete(name);
     }
 
+    @Override
+    public LocationDTO getLocationDTOByName(String name) {
+        return map(getLocationByName(name));
+    }
+
+    private void checkLocationExist(String name) {
+        if (locationRepository.existsHeroByName(name)) {
+            throw new LocationExistException("Hero " + name + " is already exist");
+        }
+    }
 
 
 //    @Override

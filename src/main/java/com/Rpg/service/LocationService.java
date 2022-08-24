@@ -11,17 +11,15 @@ public interface LocationService {
 
     void create(LocationDTO locationDTO, MultipartFile multipartFile) throws IOException;
 
-    LocationDTO getByName(String name);
+    Location getLocationByName(String name);
 
     List<LocationDTO> getAll();
-
-    void deleteByName(String name);
-
-    Location get(String name);
 
     void updateName(String name, String updateName);
 
     void updateImage(String name, MultipartFile multipartFile) throws IOException;
 
-    LocationDTO getOne(String name);
+    void deleteByName(String name);
+
+    LocationDTO getLocationDTOByName(String name);
 }

@@ -14,7 +14,7 @@ public class MvcConfig implements WebMvcConfigurer {
     @Value("${locations}")
     private String locationsPath;
 
-    @Value("${myCharacters}")
+    @Value("${characters}")
     private String charactersPath;
 
     @Override

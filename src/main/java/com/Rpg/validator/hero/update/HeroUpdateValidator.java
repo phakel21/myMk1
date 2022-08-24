@@ -5,5 +5,5 @@ import com.Rpg.entity.Hero;
 
 public interface HeroUpdateValidator {
 
-    void validate(Hero hero, HeroDTO heroUpdate);
+    void validate(Hero hero);
 }

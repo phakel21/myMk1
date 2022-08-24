@@ -29,6 +29,9 @@ public class MyUser {
     @OneToMany(mappedBy = "myUser")
     private List<Hero> heroes;
 
+//    @Column(name = "hero_count")
+//    private Integer heroCount;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 }

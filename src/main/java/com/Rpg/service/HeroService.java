@@ -2,29 +2,16 @@ package com.Rpg.service;
 
 import com.Rpg.dto.HeroDTO;
 import com.Rpg.dto.MonsterDTO;
-import com.Rpg.entity.Hero;
 
 import java.util.List;
 
 public interface HeroService {
 
-    void create(HeroDTO heroDTO, String chooseCharacter, String myUser);
+    void create(HeroDTO heroDTO);
 
-    HeroDTO getByName(String name);
+    HeroDTO getHeroDTOByName(String name);
 
     List<HeroDTO> getAll();
-
-    void deleteByName(String name);
-
-    List<HeroDTO> getHeroesByUserName(String name);
-
-    void kick(HeroDTO heroDTO, MonsterDTO monster);
-
-    Hero get(String name);
-
-    void saving(HeroDTO heroDTO);
-
-    void heroAlive(HeroDTO heroDTO);
 
     void updateName(String name, String editName);
 
@@ -32,12 +19,21 @@ public interface HeroService {
 
     void updateUser(String name, String updateUser);
 
-    HeroDTO getOne(String name);
+    void deleteByName(String name);
 
-    String update(String name,HeroDTO heroDTO, String myCharacter, String myUser);
+    List<HeroDTO> getHeroesByUserName(String name);
 
-    void createHeroDTO(HeroDTO heroDTO, String myCharacter, String myUser);
+    void kick(HeroDTO heroDTO, MonsterDTO monster);
+
+    void saving(HeroDTO heroDTO);
+
+    void heroAlive(HeroDTO heroDTO);
 
     HeroDTO findHeroByMyUserAndName(String myUserName, String name);
 
+    //    HeroDTO getByName(String name);
+
+//    void createTest(HeroDTO heroDTO);
+
+    //    Hero get(String name);
 }

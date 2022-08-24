@@ -38,12 +38,12 @@ public class FightController {
                         Model model) {
 
 
-        HeroDTO hero = heroService.getByName(heroName);
-        List<MonsterDTO> monsters = monsterService.get(locationService.getByName(locationName).getMonsters());
+        HeroDTO hero = heroService.getHeroDTOByName(heroName);
+        List<MonsterDTO> monsters = monsterService.getMonstersByLocationName(locationName);
         MonsterDTO monster = monsterService.monsterInMemory(monsters);
 
         model.addAttribute("hero", hero);
-        model.addAttribute("location", locationService.getByName(locationName));
+        model.addAttribute("location", locationService.getLocationDTOByName(locationName));
         model.addAttribute("monster", monster);
 
         if (monster == null || hero.getCurrentHp() <= 0) {
@@ -62,8 +62,8 @@ public class FightController {
                         @PathVariable("locationName") String locationName,
                         @RequestParam(name = "choose") String choose) {
 
-        HeroDTO hero = heroService.getByName(heroName);
-        List<MonsterDTO> monsters = monsterService.get(locationService.getByName(locationName).getMonsters());
+        HeroDTO hero = heroService.getHeroDTOByName(heroName);
+        List<MonsterDTO> monsters = monsterService.getMonstersByLocationName(locationName);
 
         MonsterDTO monster = monsterService.monsterInMemory(monsters);
         if (choose.equals("kick")) {
@@ -73,10 +73,5 @@ public class FightController {
 
     }
 
-//    @PostMapping("/{locationName}/fight/kick")
-//    public String kick(){
-//
-//        return "redirect";
-//    }
 
 }

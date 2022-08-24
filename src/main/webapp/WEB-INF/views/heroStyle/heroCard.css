@@ -1,0 +1,128 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#back{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    opacity: 0.6;
+}
+
+.container{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 90%;
+    width: 800px;
+    margin: 0 auto;
+}
+
+.my-card{
+    position: relative;
+    height: 400px;
+    width: 240px;
+    margin: 10px;
+}
+
+.my-card:active{
+    transform: scale(0.96);
+}
+
+.my-card input{
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.my-card input:checked ~ .card-content{
+    border-color: #4880E5;
+}
+
+.my-card .card-content{
+    position: relative;
+    cursor:pointer;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 4px solid #FFFFFF;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.02);
+
+}
+
+.my-card #hero{
+    margin-top: 120px;
+    position: relative;
+    height: 200px;
+    width: 150px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    transition: all ease 0.3s;
+}
+.my-card:hover #hero{
+    margin-top:10px;
+    /*    margin-bottom: 5px;*/
+    width: 200px;
+    height: 300px;
+}
+.my-card:hover #back{
+    opacity: 0.8;
+}
+
+.content h4 {
+    margin: 0 0 8px 0;
+}
+
+
+.content p{
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.content{
+    position: absolute;
+    bottom: -122px;
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    transition: all ease 0.4s;
+    /*opacity: 0;*/
+}
+
+.my-card:hover .content{
+    bottom: 0;
+
+}
+
+.my-card input ~ .card-content #hero{
+    opacity: 0.6;
+}
+.my-card input:hover ~ .card-content #hero{
+    opacity: 1;
+}
+.my-card input:checked ~ .card-content #hero{
+    opacity: 1;
+}
+.my-card input:checked ~ .card-content #back{
+    opacity: 1;
+}
+.my-card input:hover ~ .card-content #back{
+    opacity: 1;
+}
+
+#name{
+    width: 240px;
+}
+
+.my-margin {
+margin-top: 20px;
+/*margin-left: 20px;*/
+/*margin-right: 20px;*/
+}

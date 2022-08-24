@@ -3,7 +3,6 @@ package com.Rpg.controller;
 import com.Rpg.dto.LocationDTO;
 import com.Rpg.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,47 +27,47 @@ public class AdminLocationController {
         return new LocationDTO();
     }
 
-    @GetMapping("/location")
+    @GetMapping("/locations")
     public String getAll(Model model) {
         model.addAttribute("locations", locationService.getAll());
-        return "getLocations";
+        return "adminLocationCreateAndGetAll";
     }
 
-    @PostMapping("/location")
+    @PostMapping("/locations")
     public String create(@ModelAttribute("location") LocationDTO locationDTO,
                          @RequestParam("file")MultipartFile multipartFile) throws IOException {
         locationService.create(locationDTO, multipartFile);
 
-        return "redirect:/admin/control/location";
+        return "redirect:/admin/control/locations";
     }
 
 
     @GetMapping("/location/{name}/delete")
     public String deleteByName(@PathVariable("name") String name) {
         locationService.deleteByName(name);
-        return "redirect:/admin/control/location";
+        return "redirect:/admin/control/locations";
     }
 
-    @GetMapping("/location/{name}/edit")
+    @GetMapping("/location/{name}/update")
     public String update(Model model,
                          @PathVariable("name") String name) {
-        LocationDTO locationDTO = locationService.getOne(name);
+        LocationDTO locationDTO = locationService.getLocationDTOByName(name);
         model.addAttribute("location", locationDTO);
-        return "updateAdminLocation";
+        return "adminLocationUpdateAndGetAll";
     }
 
-    @PostMapping("/location/{name}/edit/name")
+    @PostMapping("/location/{name}/update/name")
     public String updateName(@PathVariable("name") String name,
                              @RequestParam("updateName") String updateName) {
         locationService.updateName(name, updateName);
-        return "redirect:/admin/control/location/" + updateName + "/edit";
+        return "redirect:/admin/control/location/" + updateName + "/update";
     }
 
-    @PostMapping("/location/{name}/edit/image")
+    @PostMapping("/location/{name}/update/image")
     public String updateImage(@PathVariable("name") String name,
                              @RequestParam("updateImage") MultipartFile multipartFile) throws IOException {
         locationService.updateImage(name, multipartFile);
-        return "redirect:/admin/control/location/" + name + "/edit";
+        return "redirect:/admin/control/location/" + name + "/update";
     }
 
 }

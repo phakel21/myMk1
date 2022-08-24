@@ -1,10 +1,10 @@
 package com.Rpg.service.implement;
 
+import com.Rpg.config.exception.hero.HeroExistException;
 import com.Rpg.config.exception.hero.HeroNotFoundException;
 import com.Rpg.config.exception.myUser.MyUserDontHaveThisHeroException;
 import com.Rpg.dto.HeroDTO;
 import com.Rpg.dto.MonsterDTO;
-import com.Rpg.dto.MyUserDTO;
 import com.Rpg.entity.*;
 import com.Rpg.repository.HeroRepository;
 
@@ -34,6 +34,7 @@ public class HeroServiceImplement implements HeroService {
 
     private List<HeroUpdateValidator> heroUpdateValidators;
 
+
     @Autowired
     public HeroServiceImplement(HeroRepository heroRepository,
                                 MyCharacterService myCharacterService,
@@ -47,22 +48,42 @@ public class HeroServiceImplement implements HeroService {
         this.heroUpdateValidators = heroUpdateValidators;
     }
 
+
+    //CRUD methods work with repository
+
+    private void save(Hero hero) {
+        heroRepository.save(hero);
+    }
+
+    private Hero findOne(String name) {
+        return heroRepository.findByName(name);
+    }
+
+    private List<Hero> findAll() {
+        return heroRepository.findAll();
+    }
+
+    private void delete(String name) {
+        heroRepository.deleteByName(name);
+    }
+
+    //mappers
+
     private Hero map(HeroDTO heroDTO) {
         Hero hero = new Hero();
         hero.setName(heroDTO.getName());
         hero.setCurrentHp(heroDTO.getCurrentHp());
-        hero.setMyCharacter(heroDTO.getMyCharacter());
-        hero.setMyUser(heroDTO.getMyUser());
+
+        MyCharacter myCharacter = myCharacterService.getMyCharacterByName(heroDTO.getMyCharacterDTO().getName());
+        hero.setMyCharacter(myCharacter);
+
+        MyUser myUser = myUserService.getMyUserByName(heroDTO.getMyUserDTO().getLogin());
+        hero.setMyUser(myUser);
         return hero;
     }
 
     private HeroDTO map(Hero hero) {
-        HeroDTO heroDTO = new HeroDTO();
-        heroDTO.setName(hero.getName());
-        heroDTO.setCurrentHp(hero.getCurrentHp());
-        heroDTO.setMyCharacter(hero.getMyCharacter());
-        heroDTO.setMyUser(hero.getMyUser());
-        return heroDTO;
+        return new HeroDTO(hero);
     }
 
     private List<HeroDTO> map(List<Hero> heroes) {
@@ -73,10 +94,14 @@ public class HeroServiceImplement implements HeroService {
         return heroDtos;
     }
 
+    //methods for controller
+
     @Override
-    public void create(HeroDTO heroDTO, String chooseCharacter, String name) {
-        createHeroDTO(heroDTO, chooseCharacter, name);
+    public void create(HeroDTO heroDTO) {
+
         Hero hero = map(heroDTO);
+
+        checkHeroExist(hero.getName());
 
         for (HeroCreateValidator heroCreateValidator : heroCreateValidators) {
             heroCreateValidator.validate(hero);
@@ -85,17 +110,15 @@ public class HeroServiceImplement implements HeroService {
         save(hero);
     }
 
-    private void save(Hero hero) {
-        heroRepository.save(hero);
-    }
+    private Hero getHeroByName(String name) {
 
-    @Override
-    public HeroDTO getByName(String name) {
-        return map(findOne(name));
-    }
+        Optional<Hero> optionalHero = heroRepository.findHeroByName(name);
 
-    private Hero findOne(String name) {
-        return heroRepository.findByName(name);
+        if (optionalHero.isPresent()) {
+            return optionalHero.get();
+        }
+
+        throw new HeroNotFoundException("Hero with name: " + name + " not found");
     }
 
     @Override
@@ -103,8 +126,34 @@ public class HeroServiceImplement implements HeroService {
         return map(findAll());
     }
 
-    private List<Hero> findAll() {
-        return heroRepository.findAll();
+    private void update(Hero hero) {
+
+        for (HeroUpdateValidator heroUpdateValidator : heroUpdateValidators) {
+            heroUpdateValidator.validate(hero);
+        }
+        save(hero);
+    }
+
+    @Override
+    public void updateName(String name, String updateName) {
+        checkHeroExist(updateName);
+        Hero hero = getHeroByName(name);
+        hero.setName(updateName);
+        update(hero);
+    }
+
+    @Override
+    public void updateCharacter(String name, String updateMyCharacter) {
+        Hero hero = getHeroByName(name);
+        hero.setMyCharacter(myCharacterService.getMyCharacterByName(updateMyCharacter));
+        update(hero);
+    }
+
+    @Override
+    public void updateUser(String name, String updateMyUser) {
+        Hero hero = getHeroByName(name);
+        hero.setMyUser(myUserService.getMyUserByName(updateMyUser));
+        update(hero);
     }
 
     @Override
@@ -114,22 +163,17 @@ public class HeroServiceImplement implements HeroService {
         if (!optionalHero.isPresent()) {
             throw new HeroNotFoundException("Hero with name: " + name + " not found");
         }
-        heroRepository.deleteByName(name);
+        delete(name);
+    }
 
+    @Override
+    public HeroDTO getHeroDTOByName(String name) {
+        return map(getHeroByName(name));
     }
 
     @Override
     public List<HeroDTO> getHeroesByUserName(String name) {
-        return map(findAllByUserLogin(name));
-    }
-
-    private List<Hero> findAllByUserLogin(String name) {
-        return heroRepository.findAllByMyUserLogin(name);
-    }
-
-    @Override
-    public Hero get(String name) {
-        return findOne(name);
+        return map(heroRepository.findAllByMyUserLogin(name));
     }
 
     @Override
@@ -150,67 +194,35 @@ public class HeroServiceImplement implements HeroService {
 
     @Override
     public void heroAlive(HeroDTO heroDTO) {
-        heroDTO.setCurrentHp(heroDTO.getMyCharacter().getHp());
+        heroDTO.setCurrentHp(heroDTO.getMyCharacterDTO().getHp());
         saving(heroDTO);
     }
 
     @Override
-    public void updateName(String name, String editName) {
-        Hero hero = findOne(name);
-        hero.setName(editName);
-        save(hero);
-    }
-
-    @Override
-    public void updateCharacter(String name, String editCharacter) {
-        Hero hero = findOne(name);
-        hero.setMyCharacter(myCharacterService.get(editCharacter));
-        save(hero);
-    }
-
-    @Override
-    public void updateUser(String name, String editUser) {
-        Hero hero = findOne(name);
-        hero.setMyUser(myUserService.get(editUser));
-        save(hero);
-    }
-
-    @Override
-    public String update(String name, HeroDTO heroDTO, String myCharacter, String myUser) {
-        createHeroDTO(heroDTO, myCharacter, myUser);
-        Hero hero = findOne(name);
-        for (HeroUpdateValidator heroUpdateValidator : heroUpdateValidators) {
-            heroUpdateValidator.validate(hero, heroDTO);
-        }
-        save(hero);
-        return hero.getName();
-
-    }
-
-    @Override
-    public void createHeroDTO(HeroDTO heroDTO, String myCharacter, String myUser) {
-        heroDTO.setMyCharacter(myCharacterService.get(myCharacter));
-        heroDTO.setMyUser(myUserService.get(myUser));
-    }
-
-    @Override
-    public HeroDTO getOne(String name) {
-        Optional<Hero> optionalHero = heroRepository.findHeroByName(name);
-        if (optionalHero.isPresent()) {
-            return map(optionalHero.get());
-        }
-        throw new HeroNotFoundException("Hero with name: " + name + " not found");
-    }
-
-    @Override
     public HeroDTO findHeroByMyUserAndName(String myUserName, String name) {
-        MyUser myUser = myUserService.getOne(myUserName);
+        MyUser myUser = myUserService.getMyUserByName(myUserName);
         Hero heroByMyUserAndName = heroRepository.findHeroByMyUserAndName(myUser, name);
-        if(heroByMyUserAndName == null){
-            throw new MyUserDontHaveThisHeroException("User "+ myUserName + " don't have hero " + name);
+        if (heroByMyUserAndName == null) {
+            throw new MyUserDontHaveThisHeroException("User " + myUserName + " don't have hero " + name);
         }
-        HeroDTO heroByMyUserAndName1 = map(heroByMyUserAndName);
 
-        return heroByMyUserAndName1;
+        return map(heroByMyUserAndName);
     }
+
+    private void checkHeroExist(String name) {
+        if(heroRepository.existsHeroByName(name)){
+            throw new HeroExistException("Hero " + name + " is already exist");
+        }
+    }
+
+    //
+//    @Override
+//    public HeroDTO getByName(String name) {
+//        return map(findOne(name));
+//    }
+
+    //    @Override
+//    public Hero get(String name) {
+//        return findOne(name);
+//    }
 }

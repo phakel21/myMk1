@@ -13,5 +13,7 @@ public interface MyCharacterRepository extends JpaRepository<MyCharacter, Long> 
 
     Optional<MyCharacter> findMyCharacterByName(String name);
 
+    boolean existsMyCharacterByName(String name);
+
 
 }

@@ -4,6 +4,7 @@ import com.Rpg.entity.Monster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,5 +15,9 @@ public interface MonsterRepository extends JpaRepository<Monster, Long> {
     void deleteByName(String name);
 
     Optional<Monster> findMonsterByName(String name);
+
+    List<Monster> findMonstersByLocationName(String name);
+
+    boolean existsHeroByName(String name);
 
 }

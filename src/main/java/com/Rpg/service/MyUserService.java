@@ -9,18 +9,14 @@ public interface MyUserService {
 
     MyUser registration(MyUserDTO myUserDTO);
 
-    MyUserDTO getByName(String name);
+    MyUser getMyUserByName(String name);
 
     List<MyUserDTO> getAll();
 
     void deleteByName(String name);
 
-    MyUser get(String name);
-
-    MyUserDTO hetOne(String name);
-
-    MyUser getOne(String name);
+    MyUserDTO getMyUserDTOByName(String name);
 
 
-
+    MyUserDTO getMyUserDTOforUpdate(String updateUser);
 }

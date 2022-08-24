@@ -8,12 +8,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <%--<style>--%>
+    <%--/*.image {*/--%>
+    <%--/*width: 300px;*/--%>
+    <%--/*height: 400px;*/--%>
+    <%--/*}*/--%>
+
+    <%--.my-margin {--%>
+    <%--margin-top: 20px;--%>
+    <%--margin-left: 20px;--%>
+    <%--margin-right: 20px;--%>
+    <%--}--%>
+    <%--</style>--%>
     <style>
-        .my-margin {
-            margin-top: 20px;
-        }
+        <%@include file="heroStyle/heroCard.css" %>
     </style>
     <title>Heroes</title>
+    <%--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>--%>
+    <%--<link rel="stylesheet" href="heroStyle/heroCard.css">--%>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
@@ -28,6 +40,9 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
 
             <div class="navbar-nav ms-auto">
+                <div class="navbar-nav">
+                    <a href="/${user}/hero/choose" class="nav-item nav-link">Back</a>
+                </div>
                 <sec:authorize access="isAuthenticated()">
                     <a href="/logout" class="nav-item nav-link">Logout</a>
                 </sec:authorize>
@@ -38,37 +53,94 @@
 </nav>
 
 
-<div class="my-margin d-flex justify-content-center">
+<div class="my-margin">
 
 
-    <form:form class="row g-3 align-items-center" method="post" modelAttribute="hero">
-        <div class="col-auto">
-            <label for="name" class="col-form-label">Name</label>
+    <%--<div class="row">--%>
+    <%--<div class="col d-flex justify-content-center"--%>
+    <%--style="margin-bottom: 20px">--%>
+    <%--<label for="test">--%>
+    <%--<h3>--%>
+    <%--Choose Character--%>
+    <%--</h3>--%>
+    <%--</label>--%>
+    <%--</div>--%>
+    <%--</div>--%>
+
+
+    <form:form method="post"
+               modelAttribute="hero">
+
+        <div class="row">
+
+            <div class="col d-flex justify-content-end">
+                <label for="name"
+                       class="col-form-label">Name</label>
+            </div>
+            <div class="col d-flex justify-content-start">
+
+                <form:input path="name"
+                            type="text"
+                            id="name"
+                            class="form-control"/>
+            </div>
+
+
         </div>
-        <div class="col-auto">
-            <form:input path="name" type="text" id="name" class="form-control"/>
-        </div>
-        <div class="col-auto">
-            <label for="myCharacter" class="col-form-label">Character</label>
+        <div class="row">
+            <div class="col d-flex justify-content-end">
+                <label class="col-form-label">Choose Character</label>
+            </div>
+            <div class="col">
+
+            </div>
         </div>
 
-        <div class="col-auto">
-            <select class="form-select" aria-label="Default select example" id="myCharacter" name="chooseCharacter">
-                <option selected></option>
-                <c:forEach var="myCharacter" items="${myCharacters}">
-                    <option value="${myCharacter.name}">${myCharacter.name}</option>
+        <div class="row">
+
+            <div class="col d-flex justify-content-center">
+
+                <c:forEach var="myCharacter"
+                           items="${myCharacters}">
+
+                    <label class="my-card">
+                        <input type="radio" name="choose" id="movies" value="${myCharacter.name}">
+                        <div class="card-content">
+                            <img id="back" src="/images/locations/back.jpg" alt="back" srcset=""/>
+                            <img id="hero" src="/images/myCharacters/${myCharacter.image}" alt="movies" srcset=""/>
+                            <div class="content">
+                                <h4>${myCharacter.name}</h4>
+                                <p>HP : 100</p>
+                                <p>MP : 100</p>
+                                <p>Power : 100</p>
+
+                            </div>
+                        </div>
+                    </label>
+
                 </c:forEach>
-            </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+
+
+                <div class="row">
+                    <div class="col">
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Create
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
         </div>
 
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Create</button>
-        </div>
 
     </form:form>
 </div>
-
-
 
 </body>
 </html>

@@ -39,11 +39,10 @@
         </div>
         <div class="col-auto">
             <select class="form-select" name="choose" id="control">
-                <option selected></option>
-                <option value="myCharacter">Character</option>
-                <option value="hero">Hero</option>
-                <option value="location">Location</option>
-                <option value="monster">Monster</option>
+                <option value="characters">Character</option>
+                <option value="heroes">Hero</option>
+                <option value="locations">Location</option>
+                <option value="monsters">Monster</option>
             </select>
         </div>
 

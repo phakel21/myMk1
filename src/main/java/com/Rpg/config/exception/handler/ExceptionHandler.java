@@ -1,9 +1,9 @@
 package com.Rpg.config.exception.handler;
 
-import com.Rpg.config.exception.DontHaveNameException;
-import com.Rpg.config.exception.NotFoundException;
-import com.Rpg.config.exception.hero.HeroDontHaveAllDataException;
+import com.Rpg.config.exception.*;
 import com.Rpg.config.exception.hero.HeroDontHaveMyCharacterException;
+import com.Rpg.config.exception.image.ImageNotFoundException;
+import com.Rpg.config.exception.location.LocationExistException;
 import com.Rpg.config.exception.myUser.MyUserDontHaveThisHeroException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +28,40 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(value = HeroDontHaveAllDataException.class)
-    public ResponseEntity handle(HeroDontHaveAllDataException ex){
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
     @org.springframework.web.bind.annotation.ExceptionHandler(value = MyUserDontHaveThisHeroException.class)
     public ResponseEntity handle(MyUserDontHaveThisHeroException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = ImageNotFoundException.class)
+    public ResponseEntity handle(ImageNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = ExistException.class)
+    public ResponseEntity handle(ExistException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = DontHaveHpException.class)
+    public ResponseEntity handle(DontHaveHpException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = DontHaveMpException.class)
+    public ResponseEntity handle(DontHaveMpException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = DontHavePowerException.class)
+    public ResponseEntity handle(DontHavePowerException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = DontHaveLocationException.class)
+    public ResponseEntity handle(DontHaveLocationException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+
+
 }

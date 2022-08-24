@@ -46,14 +46,14 @@
                 </thead>
                 <tbody>
 
-                    <c:forEach var="hero" items="${heroes}">
+                    <c:forEach var="location" items="${heroes}">
                         <tr>
-                            <th scope="row">${hero.name}</th>
-                            <td>${hero.myCharacter.name}</td>
+                            <th scope="row">${location.name}</th>
+                            <td>${location.myCharacter.name}</td>
                             <td>
                                 <div>
                                     <input class="form-check-input" type="checkbox" name="chooseHero"
-                                           value="${hero.name}"
+                                           value="${location.name}"
                                            id="flexCheckDefault">
                                 </div>
                             </td>
@@ -64,7 +64,7 @@
 
                 <%--<form:form modelAttribute="hero" method="post" class="form-horizontal">--%>
 
-                <%--<c:forEach var="hero" items="${heroes}">--%>
+                <%--<c:forEach var="hero" items="${heroDTOS}">--%>
 
                 <%--<div class="form-check">--%>
                 <%--<input class="form-check-input" type="checkbox" name="chooseHero" value="${hero.name}"--%>

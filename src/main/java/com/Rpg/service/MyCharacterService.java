@@ -11,13 +11,9 @@ public interface MyCharacterService {
 
     void create(MyCharacterDTO myCharacterDTO, MultipartFile multipartFile) throws IOException;
 
-    MyCharacterDTO getByName(String name);
+    MyCharacter getMyCharacterByName(String name);
 
     List<MyCharacterDTO> getAll();
-
-    void deleteByName(String name);
-
-    MyCharacter get(String name);
 
     void updateName(String name, String updateName);
 
@@ -29,8 +25,15 @@ public interface MyCharacterService {
 
     void updateImage(String name, MultipartFile multipartFile) throws IOException;
 
-    MyCharacterDTO getOne(String name);
+    void deleteByName(String name);
 
-    MyCharacter getMyCharacter(String name);
+//    MyCharacter map(MyCharacterDTO myCharacterDTO);
 
+    MyCharacterDTO getMyCharacterDTOByName(String name);
+
+//    MyCharacterDTO getOne(String name);
+
+//    MyCharacter getMyCharacter(String name);
+//
+//    MyCharacterDTO getMyCharacterDTOforUpdate(String name);
 }

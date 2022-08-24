@@ -8,5 +8,5 @@ public interface ImageService {
 
     String saveFile(String path, MultipartFile multipartFile) throws IOException;
 
-    boolean deleteFile(String path, String fileName);
+    void deleteFile(String path, String fileName);
 }

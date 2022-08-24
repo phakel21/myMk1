@@ -21,4 +21,7 @@ public interface HeroRepository extends JpaRepository<Hero, Long> {
 
     Hero findHeroByMyUserAndName(MyUser myUser, String name);
 
+    Integer countHeroByMyUser(MyUser myUser);
+
+    boolean existsHeroByName(String name);
 }

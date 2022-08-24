@@ -73,15 +73,15 @@
                     <th>Power</th>
                     <th>CurrentHp</th>
                 </tr>
-                <c:forEach var="hero" items="${heroes}">
+                <c:forEach var="location" items="${heroes}">
 
                     <tr>
-                        <td>${hero.name}</td>
+                        <td>${location.name}</td>
                         <%--<td><a href="/admin/heroClass">${hero.heroClass.heroName}</a></td>--%>
-                        <td>${hero.userHP}</td>
-                        <td>${hero.userMP}</td>
-                        <td>${hero.userPower}</td>
-                        <td>${hero.currentHp}</td>
+                        <td>${location.userHP}</td>
+                        <td>${location.userMP}</td>
+                        <td>${location.userPower}</td>
+                        <td>${location.currentHp}</td>
                         <%--<td>--%>
                             <%--<div>--%>
                                 <%--<a href="/location/delete/${location.locationId}">--%>

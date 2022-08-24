@@ -53,8 +53,8 @@
             <div class="col-auto">
                 <select class="form-select" aria-label="Default select example" id="myCharacter" name="chooseCharacter">
                     <option selected>${hero.myCharacter.name}</option>
-                    <c:forEach var="myCharacter" items="${myCharacters}">
-                        <option value="${myCharacter.name}">${myCharacter.name}</option>
+                    <c:forEach var="location" items="${myCharacters}">
+                        <option value="${location.name}">${location.name}</option>
                     </c:forEach>
                 </select>
             </div>

@@ -67,7 +67,7 @@
                 <%--&lt;%&ndash;<h2>${hero.name}</h2>&ndash;%&gt;--%>
             <%--&lt;%&ndash;</form:form>&ndash;%&gt;--%>
 
-                <%--<c:forEach var="hero" items="${heroes}">--%>
+                <%--<c:forEach var="hero" items="${heroDTOS}">--%>
                     <%--<tr>--%>
                         <%--<td>${hero.name}</td>--%>
                     <%--</tr>--%>
@@ -81,9 +81,9 @@
                 <%--</div>--%>
 
                 <%--<div class="form-group">--%>
-                    <%--<label for="myCharacter" class="control-label col-sm-2">MyCharacter:</label>--%>
+                    <%--<label for="myCharacterDTO" class="control-label col-sm-2">MyCharacter:</label>--%>
                     <%--<div class="col-sm-10">--%>
-                        <%--<form:input path="myCharacter" class="form-control" id="myCharacter"/>--%>
+                        <%--<form:input path="myCharacterDTO" class="form-control" id="myCharacterDTO"/>--%>
                     <%--</div>--%>
                 <%--</div>--%>
 

@@ -27,7 +27,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <%--<div class="navbar-nav">--%>
-            <%--<a href="/admin/control/myCharacter" class="nav-item nav-link">Clear</a>--%>
+            <%--<a href="/admin/control/myCharacterDTO" class="nav-item nav-link">Clear</a>--%>
             <%--</div>--%>
             <%--<div class="navbar-nav">--%>
             <%--<a href="/admin/control" class="nav-item nav-link">Back</a>--%>
