@@ -39,19 +39,19 @@
 </nav>
 
 <div class=" d-flex justify-content-center">
-    <form:form method="POST" action="/login">
+    <form:form method="POST" action="/login" modelAttribute="userLogin">
     <div class="col-auto">
         <label for="login" class="col-form-label">Login</label>
     </div>
     <div class="col-auto">
-        <input type="text" name="login" id="login" class="form-control"/>
+        <form:input path="login" type="text"  id="login" class="form-control"/>
     </div>
     <div>
         <div class="col-auto">
             <label for="password" class="col-form-label">Password</label>
         </div>
         <div class="col-auto">
-            <input type="password" name="password" id="password" class="form-control"/>
+            <form:input path="password" type="password" id="password" class="form-control"/>
         </div>
     </div>
     <div>

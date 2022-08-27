@@ -9,11 +9,13 @@ import com.Rpg.service.HeroService;
 import com.Rpg.service.MyUserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -25,6 +27,8 @@ public class AdminHeroController {
     private MyUserService myUserService;
 
     private MyCharacterService myCharacterService;
+    private final String headerForAuth = "Authorization";
+
 
     @Autowired
     public AdminHeroController(HeroService heroService, MyUserService myUserService,
@@ -44,11 +48,12 @@ public class AdminHeroController {
         return new HeroDTO();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/heroes")
     public String createAndGetAll(Model model) {
         model.addAttribute("heroes", heroService.getAll());
         model.addAttribute("myCharacters", myCharacterService.getAll());
-        model.addAttribute("myUsers", myUserService.getAll());
+//        model.addAttribute("myUsers", myUserService.getAll());
         return "adminHeroCreateAndGetAll";
     }
 
@@ -60,14 +65,14 @@ public class AdminHeroController {
                          Model model) {
         model.addAttribute("heroes", heroService.getAll());
         model.addAttribute("myCharacters", myCharacterService.getAll());
-        model.addAttribute("myUsers", myUserService.getAll());
+//        model.addAttribute("myUsers", myUserService.getAll());
         if(bindingResult.hasErrors()){
             return "adminHeroCreateAndGetAll";
         }
         MyCharacterDTO myCharacterDTO = myCharacterService.getMyCharacterDTOByName(chooseCharacter);
-        MyUserDTO myUserDTO = myUserService.getMyUserDTOByName(chooseUser);
+//        MyUserDTO myUserDTO = myUserService.getMyUserDTOByName(chooseUser);
         heroDTO.setMyCharacterDTO(myCharacterDTO);
-        heroDTO.setMyUserDTO(myUserDTO);
+//        heroDTO.setMyUserDTO(myUserDTO);
         heroService.create(heroDTO);
 
         return "redirect:/admin/control/heroes";
@@ -78,7 +83,7 @@ public class AdminHeroController {
                          @PathVariable("name") String name) {
         model.addAttribute("hero", heroService.getHeroDTOByName(name));
         model.addAttribute("myCharacters", myCharacterService.getAll());
-        model.addAttribute("myUsers", myUserService.getAll());
+//        model.addAttribute("myUsers", myUserService.getAll());
         return "adminHeroUpdateAndGetOne";
     }
 

@@ -1,5 +1,7 @@
 package com.Rpg.config;
 
+import com.Rpg.config.jwt.JWTFilter;
+
 import com.Rpg.service.implement.MyUserServiceImplement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +11,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -19,38 +23,64 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private MyUserServiceImplement userServiceImplement;
+    private JWTFilter jwtFilter;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(this.userServiceImplement)
-                .passwordEncoder(passwordEncoder());
-    }
+//    @Autowired
+//    private JWTMyUserFilter jwtMyUserFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+//    private MyUserServiceImplement userServiceImplement;
+//
+//    @Autowired
+//    public WebSecurityConfig(MyUserServiceImplement userServiceImplement) {
+//        this.userServiceImplement = userServiceImplement;
+//    }
 
-    }
+    //    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth
+//                .userDetailsService(this.userServiceImplement)
+//                .passwordEncoder(passwordEncoder());
+//    }
+//
+
+
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//
+//        http
+//                .csrf().disable()
+//                    .authorizeRequests()
+//                    .antMatchers("/**")
+//                    .permitAll()
+//                    .anyRequest()
+//                    .authenticated()
+//                .and()
+//                    .formLogin()
+//                    .usernameParameter("login")
+//                    .passwordParameter("password")
+//                    .loginPage("/login")
+//                    .permitAll().
+//                and().
+//                    logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
+//    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
                 .csrf().disable()
-                    .authorizeRequests()
-                    .antMatchers("/**")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
+                .httpBasic().disable()
+//                .authorizeRequests().antMatchers("/").hasAnyRole("ADMIN")
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .formLogin()
-                    .usernameParameter("login")
-                    .passwordParameter("password")
-                    .loginPage("/login")
-                    .permitAll().
-                and().
-                    logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
+                .antMatcher("/**")
+                .authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/registration").permitAll()
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .addFilterAfter(jwtMyUserFilter, JWTFilter.class);
     }
 }

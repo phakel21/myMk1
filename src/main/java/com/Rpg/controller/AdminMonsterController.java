@@ -5,6 +5,7 @@ import com.Rpg.dto.MonsterDTO;
 import com.Rpg.service.LocationService;
 import com.Rpg.service.MonsterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,7 @@ public class AdminMonsterController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/monsters")
     public String getAll(Model model) {
         model.addAttribute("locations", locationService.getAll());
@@ -42,6 +44,7 @@ public class AdminMonsterController {
         return "adminMonsterCreateAndGetAll";
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/monsters")
     public String create(@ModelAttribute("monster") MonsterDTO monsterDTO,
                          @RequestParam(name = "chooseLocation") String chooseLocation,

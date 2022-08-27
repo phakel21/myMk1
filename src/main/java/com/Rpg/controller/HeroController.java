@@ -8,6 +8,7 @@ import com.Rpg.service.MyCharacterService;
 import com.Rpg.service.HeroService;
 import com.Rpg.service.MyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -64,11 +65,9 @@ public class HeroController {
 //    }
 
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute("hero") HeroDTO heroDTO,
-                         BindingResult bindingResult,
+    public String create(@ModelAttribute("hero") HeroDTO heroDTO,
                          @RequestParam(name = "choose") String chooseCharacter,
-                         @PathVariable("userName") String userName,
-                         Model model) {
+                         @PathVariable("userName") String userName) {
 //        if(chooseCharacter != null && !chooseCharacter.trim().isEmpty()){
 //            heroDTO.setMyCharacterDTO(myCharacterService.getByName(chooseCharacter));
 //        }
@@ -76,9 +75,7 @@ public class HeroController {
 //            return create(model);
 //            return "createHero";
 //        }
-        if (bindingResult.hasErrors()) {
-            create(userName, model);
-        }
+
 
         MyCharacterDTO myCharacterDTO = myCharacterService.getMyCharacterDTOByName(chooseCharacter);
         MyUserDTO myUserDTO = myUserService.getMyUserDTOByName(userName);
@@ -88,6 +85,7 @@ public class HeroController {
         return "redirect:/" + userName + "/hero/choose";
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @GetMapping("/choose")
     public String choose(Model model,
                          @PathVariable("userName") String name) {
@@ -100,6 +98,7 @@ public class HeroController {
         return "chooseHero";
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @PostMapping("/choose")
     public String choose(@RequestParam(name = "chooseHero") String chooseHero,
                          @PathVariable("userName") String name) {
