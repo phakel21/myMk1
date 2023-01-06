@@ -23,11 +23,8 @@ public class Hero {
     @Column(name = "currentHp", nullable = false)
     private Integer currentHp;
 
-//    @Column(name = "hp")
-//    private Integer hp;
-//
-//    @Column(name = "mp")
-//    private Integer mp;
+    @Column(name = "score", nullable = false)
+    private Integer score;
 
     @ManyToOne
     @JoinColumn(name = "character_id", nullable = false)
@@ -41,6 +38,7 @@ public class Hero {
     @PrePersist
     public void onCreate(){
         this.currentHp = myCharacter.getHp();
+        this.score = 0;
     }
 
 }

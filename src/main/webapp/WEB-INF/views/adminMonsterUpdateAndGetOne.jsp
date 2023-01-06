@@ -112,6 +112,22 @@
 
     <div class="my-margin">
         <form:form class="row" method="post"
+                   action="/admin/control/monster/${monster.name}/update/score">
+            <div class="col d-flex justify-content-end">
+                <label for="score" class="col-form-label">Score</label>
+            </div>
+
+            <div class="col-auto" style="width: 200px;">
+                <input name="updateScore" type="text" id="score" class="form-control"/>
+            </div>
+            <div class="col d-flex justify-content-start">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form:form>
+    </div>
+
+    <div class="my-margin">
+        <form:form class="row" method="post"
                    action="/admin/control/monster/${monster.name}/update/location">
             <div class="col d-flex justify-content-end">
                 <label for="location" class="col-form-label">Location</label>
@@ -176,7 +192,10 @@
             <th scope="col">Power</th>
             <td>${monster.power}</td>
         </tr>
-
+        <tr>
+            <th scope="col">Score</th>
+            <td>${monster.score}</td>
+        </tr>
         <tr>
             <th scope="col">Location</th>
             <td>${monster.location.name}</td>

@@ -99,6 +99,19 @@
             </div>
 
             <div class="my-margin">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <label for="score" class="col-form-label">Score</label>
+                    </div>
+                    <div class="col d-flex justify-content-start">
+                        <form:input cssStyle="width: 200px" path="score" type="text" id="score" class="form-control"/>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="my-margin">
 
                 <div class="row">
                     <div class="col d-flex justify-content-end">
@@ -163,6 +176,7 @@
             <th scope="col">Hp</th>
             <th scope="col">Mp</th>
             <th scope="col">Power</th>
+            <th scope="col">Score</th>
             <th scope="col">Image</th>
             <th scope="col">Edit</th>
             <th scope="col">Delete</th>
@@ -175,6 +189,7 @@
                 <td>${monster.hp}</td>
                 <td>${monster.mp}</td>
                 <td>${monster.power}</td>
+                <td>${monster.score}</td>
                 <td><img alt="not found image" class="image" src="/images/monsters/${monster.image}"></td>
                 <td>
 

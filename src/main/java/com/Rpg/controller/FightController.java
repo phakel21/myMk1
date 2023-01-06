@@ -1,77 +1,98 @@
 package com.Rpg.controller;
 
-import com.Rpg.dto.HeroDTO;
-import com.Rpg.dto.MonsterDTO;
+import com.Rpg.entity.Hero;
+import com.Rpg.entity.Location;
+import com.Rpg.entity.Monster;
+import com.Rpg.entity.MyCharacter;
+import com.Rpg.repository.HeroRepository;
 import com.Rpg.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
-@RequestMapping("{userName}/hero/{heroName}/location")
+@RequestMapping("/fight")
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_USER')")
 public class FightController {
 
-    private HeroService heroService;
-
-    private LocationService locationService;
-
-    private FightService fightService;
-
-    private MonsterService monsterService;
-
-    @Autowired
-    public FightController(HeroService heroService, LocationService locationService, FightService fightService, MonsterService monsterService) {
-        this.heroService = heroService;
-        this.locationService = locationService;
-        this.fightService = fightService;
-        this.monsterService = monsterService;
-    }
+    private final HeroService heroService;
+    private final LocationService locationService;
+    private final FightService fightService;
+    private final MonsterService monsterService;
+    private final HeroRepository heroRepository;
 
 
-    @GetMapping("/{locationName}/fight")
-    public String fight(@PathVariable("heroName") String heroName,
-                        @PathVariable("userName") String userName,
-                        @PathVariable("locationName") String locationName,
-                        Model model) {
+    private static final String win = "win";
+    private static final String loose = "loose";
 
 
-        HeroDTO hero = heroService.getHeroDTOByName(heroName);
-        List<MonsterDTO> monsters = monsterService.getMonstersByLocationName(locationName);
-        MonsterDTO monster = monsterService.monsterInMemory(monsters);
+    @GetMapping
+    public String fight(Model model) {
 
-        model.addAttribute("hero", hero);
-        model.addAttribute("location", locationService.getLocationDTOByName(locationName));
-        model.addAttribute("monster", monster);
 
-        if (monster == null || hero.getCurrentHp() <= 0) {
-            monsterService.monstersAlive(monsters);
-            heroService.heroAlive(hero);
-            return "redirect:/" + userName + "/hero/" + heroName + "/lobby";
+        Monster monster = monsterService.currentMonster();
+        Hero hero = heroService.getCurrentHero();
+        Location location = locationService.currentLocation();
+
+        if(monster == null || hero == null || location == null){
+            return "redirect:/hero/choose";
         }
+
+        model.addAttribute("monster", monster);
+        model.addAttribute("hero", hero);
+        model.addAttribute("location", location);
+
         return "fight";
 
     }
 
+    @PostMapping
+    public String fight(@RequestParam String choose) {
 
-    @PostMapping("/{locationName}/fight")
-    public String fight(@PathVariable("heroName") String heroName,
-                        @PathVariable("userName") String userName,
-                        @PathVariable("locationName") String locationName,
-                        @RequestParam(name = "choose") String choose) {
+        Monster monster = monsterService.currentMonster();
+        Hero hero = heroService.getCurrentHero();
 
-        HeroDTO hero = heroService.getHeroDTOByName(heroName);
-        List<MonsterDTO> monsters = monsterService.getMonstersByLocationName(locationName);
-
-        MonsterDTO monster = monsterService.monsterInMemory(monsters);
         if (choose.equals("kick")) {
             fightService.fight(hero, monster);
         }
-        return "redirect:/" + userName + "/hero/" + heroName + "/location/" + locationName + "/fight";
+
+        if (hero.getCurrentHp() > 0 && monster.getCurrentHp() <= 0) {
+                hero.setScore(10);
+            heroRepository.save(hero);
+            return "redirect:/fight/" + win;
+        }
+
+        if (hero.getCurrentHp() <= 0) {
+            return "redirect:/fight/" + loose;
+        }
+
+        return "redirect:/fight";
 
     }
 
+
+    @GetMapping("/{winOrLose}")
+    public String menu(Model model,
+                       @PathVariable("winOrLose") String winOrLose) {
+        Hero currentHero = heroService.getCurrentHero();
+        MyCharacter myCharacter = currentHero.getMyCharacter();
+        currentHero.setCurrentHp(myCharacter.getHp());
+        heroRepository.save(currentHero);
+        model.addAttribute("winOrLose", winOrLose);
+        return "menu";
+    }
+
+    @PostMapping("/{winOrLose}")
+    public String menu(@RequestParam String choose,
+                       @PathVariable("winOrLose") String winOrLose) {
+
+        if (choose.equals("lobby"))
+            return "redirect:/lobby";
+
+        return "redirect:/fight/" + winOrLose;
+    }
 
 }

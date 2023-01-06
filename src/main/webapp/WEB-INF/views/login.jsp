@@ -38,87 +38,38 @@
     </div>
 </nav>
 
-<div class=" d-flex justify-content-center">
-    <form:form method="POST" action="/login" modelAttribute="userLogin">
-    <div class="col-auto">
-        <label for="login" class="col-form-label">Login</label>
-    </div>
-    <div class="col-auto">
-        <form:input path="login" type="text"  id="login" class="form-control"/>
-    </div>
-    <div>
-        <div class="col-auto">
-            <label for="password" class="col-form-label">Password</label>
-        </div>
-        <div class="col-auto">
-            <form:input path="password" type="password" id="password" class="form-control"/>
-        </div>
-    </div>
-    <div>
 
-        <div class="col-auto my-margin">
-            <div class="checkbox">
-                <label><input type="checkbox" name="rememberMe"/> Remember me</label>
+<div class=" d-flex justify-content-center">
+    <form:form method="POST"
+               action="/login" class="form-horizontal" >
+
+        <div class="col-auto">
+            <label for="username" class="col-form-label">Name</label>
+        </div>
+        <div class="col-auto">
+
+            <input type="text" name="username" id="username" class="form-control"/>
+        </div>
+
+        <div>
+            <div class="col-auto">
+                <label for="password" class="col-form-label">Password</label>
+            </div>
+            <div class="col-auto">
+                <input type="password" name="password" id="password" class="form-control"/>
             </div>
         </div>
-    </div>
 
 
-    <div class="col-auto my-margin my-margin">
-        <div class="col-sm-10 col-sm-offset-2">
-            <button class="btn btn-primary" type="submit">Login</button>
+
+        <div class="col-auto my-margin">
+            <div class="col-sm-10 col-sm-offset-2">
+                <button class="btn btn-primary" type="submit">Login</button>
+            </div>
         </div>
-    </div>
     </form:form>
 
+</div>
 
-    <%--<div class="header">--%>
-    <%--<div class="header-right">--%>
-    <%--<sec:authorize access="isAuthenticated()">--%>
-    <%--<a href="/logout">Logout</a>--%>
-    <%--</sec:authorize>--%>
-
-    <%--<sec:authorize access="hasRole('ROLE_ADMIN')">--%>
-    <%--<a href="/admin">Admin</a>--%>
-    <%--</sec:authorize>--%>
-
-    <%--<a href="/login">Login</a>--%>
-    <%--<a href="/registration">Registration</a>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--<div class="container">--%>
-    <%--<div class="row">--%>
-    <%--<div class="col-sm-8 col-sm-offset-2">--%>
-    <%--<form:form class="form-horizontal" action="/login" method="POST">--%>
-    <%--<div class="form-group">--%>
-    <%--<label for="name" class="control-label col-sm-2">Email or phone:</label>--%>
-    <%--<div class="col-sm-10">--%>
-    <%--<input type="text" name="login" id="name" class="form-control"/>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--<div class="form-group">--%>
-    <%--<label for="password" class="control-label col-sm-2">Password:</label>--%>
-    <%--<div class="col-sm-10">--%>
-    <%--<input type="password" name="password" id="password" class="form-control"/>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--<div class="form-group">--%>
-    <%--<div class="col-sm-offset-2 col-sm-10">--%>
-    <%--<div class="checkbox">--%>
-    <%--<label><input type="checkbox" name="rememberMe"/> Remember me</label>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--<div class="form-group">--%>
-    <%--<div class="col-sm-10 col-sm-offset-2">--%>
-    <%--<button class="btn btn-success" type="submit">Sing in</button>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--</form:form>--%>
-    <%--<a href="/registration"> registration</a>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <%--</div>--%>
 </body>
 </html>

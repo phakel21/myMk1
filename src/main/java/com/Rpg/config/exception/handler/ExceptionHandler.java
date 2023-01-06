@@ -61,6 +61,10 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity handle(DontHaveLocationException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = YouWinException.class)
+    public ResponseEntity handle(YouWinException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.OK);
+    }
 
 
 

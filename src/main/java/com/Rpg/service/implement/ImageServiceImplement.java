@@ -2,6 +2,7 @@ package com.Rpg.service.implement;
 
 import com.Rpg.service.ImageService;
 import com.Rpg.validator.image.ImageValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ImageServiceImplement implements ImageService {
 
     @Value("${file.path}")
     private String filePath;
 
-    private List<ImageValidator> imageValidators;
-
-    @Autowired
-    public ImageServiceImplement(List<ImageValidator> imageValidators) {
-        this.imageValidators = imageValidators;
-    }
+    private final List<ImageValidator> imageValidators;
 
     @Override
     public String saveFile(String path, MultipartFile multipartFile) throws IOException {

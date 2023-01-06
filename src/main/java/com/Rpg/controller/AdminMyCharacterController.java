@@ -1,8 +1,10 @@
 package com.Rpg.controller;
 
 import com.Rpg.dto.MyCharacterDTO;
+import com.Rpg.entity.MyCharacter;
 import com.Rpg.service.MyCharacterService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +14,12 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping("/admin/control")
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class AdminMyCharacterController {
 
-    private MyCharacterService myCharacterService;
+    private final MyCharacterService myCharacterService;
 
-    @Autowired
-    public AdminMyCharacterController(MyCharacterService myCharacterService) {
-        this.myCharacterService = myCharacterService;
-    }
 
     @ModelAttribute("myCharacter")
     public MyCharacterDTO getModel() {
@@ -34,10 +34,10 @@ public class AdminMyCharacterController {
 
 
     @PostMapping("/characters")
-    public String create(@ModelAttribute(name = "myCharacter") MyCharacterDTO myCharacterDTO,
+    public String create(@ModelAttribute(name = "myCharacter") MyCharacter myCharacter,
                          @RequestParam(name = "file") MultipartFile image) throws IOException {
 
-        myCharacterService.create(myCharacterDTO, image);
+        myCharacterService.create(myCharacter, image);
 
         return "redirect:/admin/control/characters";
     }
@@ -51,8 +51,8 @@ public class AdminMyCharacterController {
     @GetMapping("/character/{name}/update")
     public String update(Model model,
                          @PathVariable("name") String name) {
-        MyCharacterDTO myCharacterDTO = myCharacterService.getMyCharacterDTOByName(name);
-        model.addAttribute("myCharacter", myCharacterDTO);
+        MyCharacter myCharacter = myCharacterService.getMyCharacterByName(name);
+        model.addAttribute("myCharacter",myCharacter);
         return "adminMyCharacterUpdateAndGetOne";
     }
 

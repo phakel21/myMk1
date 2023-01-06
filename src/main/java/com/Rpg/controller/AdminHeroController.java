@@ -4,10 +4,13 @@ package com.Rpg.controller;
 import com.Rpg.dto.HeroDTO;
 import com.Rpg.dto.MyCharacterDTO;
 import com.Rpg.dto.MyUserDTO;
+import com.Rpg.entity.Hero;
+import com.Rpg.entity.MyCharacter;
 import com.Rpg.service.MyCharacterService;
 import com.Rpg.service.HeroService;
 import com.Rpg.service.MyUserService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -20,27 +23,16 @@ import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/admin/control")
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class AdminHeroController {
 
-    private HeroService heroService;
-
-    private MyUserService myUserService;
-
-    private MyCharacterService myCharacterService;
-    private final String headerForAuth = "Authorization";
-
-
-    @Autowired
-    public AdminHeroController(HeroService heroService, MyUserService myUserService,
-                               MyCharacterService myCharacterService) {
-        this.heroService = heroService;
-        this.myUserService = myUserService;
-        this.myCharacterService = myCharacterService;
-    }
+    private final HeroService heroService;
+    private final MyCharacterService myCharacterService;
 
     @ModelAttribute("hero")
-    public HeroDTO getModel() {
-        return new HeroDTO();
+    public Hero getModel() {
+        return new Hero();
     }
 
     @ModelAttribute("updateHero")
@@ -48,32 +40,28 @@ public class AdminHeroController {
         return new HeroDTO();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+
     @GetMapping("/heroes")
     public String createAndGetAll(Model model) {
         model.addAttribute("heroes", heroService.getAll());
         model.addAttribute("myCharacters", myCharacterService.getAll());
-//        model.addAttribute("myUsers", myUserService.getAll());
         return "adminHeroCreateAndGetAll";
     }
 
     @PostMapping("/heroes")
-    public String create(@Valid @ModelAttribute("hero") HeroDTO heroDTO,
+    public String create(@Valid @ModelAttribute("hero") Hero hero,
                          BindingResult bindingResult,
                          @RequestParam(name = "chooseCharacter") String chooseCharacter,
                          @RequestParam(name = "chooseUser") String chooseUser,
                          Model model) {
         model.addAttribute("heroes", heroService.getAll());
         model.addAttribute("myCharacters", myCharacterService.getAll());
-//        model.addAttribute("myUsers", myUserService.getAll());
         if(bindingResult.hasErrors()){
             return "adminHeroCreateAndGetAll";
         }
-        MyCharacterDTO myCharacterDTO = myCharacterService.getMyCharacterDTOByName(chooseCharacter);
-//        MyUserDTO myUserDTO = myUserService.getMyUserDTOByName(chooseUser);
-        heroDTO.setMyCharacterDTO(myCharacterDTO);
-//        heroDTO.setMyUserDTO(myUserDTO);
-        heroService.create(heroDTO);
+        MyCharacter myCharacter = myCharacterService.getMyCharacterByName(chooseCharacter);
+        hero.setMyCharacter(myCharacter);
+        heroService.create(hero);
 
         return "redirect:/admin/control/heroes";
     }
@@ -81,9 +69,8 @@ public class AdminHeroController {
     @GetMapping("/hero/{name}/update")
     public String updateAndGetOne(Model model,
                          @PathVariable("name") String name) {
-        model.addAttribute("hero", heroService.getHeroDTOByName(name));
+        model.addAttribute("hero", heroService.getHero(name));
         model.addAttribute("myCharacters", myCharacterService.getAll());
-//        model.addAttribute("myUsers", myUserService.getAll());
         return "adminHeroUpdateAndGetOne";
     }
 
@@ -110,7 +97,7 @@ public class AdminHeroController {
 
     @GetMapping("/hero/{name}/delete")
     public String delete(@PathVariable("name") String name) {
-        heroService.deleteByName(name);
+        heroService.delete(name);
         return "redirect:/admin/control/heroes";
     }
 

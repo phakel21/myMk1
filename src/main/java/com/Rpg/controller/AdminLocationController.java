@@ -1,8 +1,9 @@
 package com.Rpg.controller;
 
-import com.Rpg.dto.LocationDTO;
+import com.Rpg.entity.Location;
 import com.Rpg.service.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,18 +14,15 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping("/admin/control")
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class AdminLocationController {
 
-    private LocationService locationService;
-
-    @Autowired
-    public AdminLocationController(LocationService locationService) {
-        this.locationService = locationService;
-    }
+    private final LocationService locationService;
 
     @ModelAttribute("location")
-    public LocationDTO getModel() {
-        return new LocationDTO();
+    public Location getModel() {
+        return new Location();
     }
 
     @GetMapping("/locations")
@@ -34,9 +32,9 @@ public class AdminLocationController {
     }
 
     @PostMapping("/locations")
-    public String create(@ModelAttribute("location") LocationDTO locationDTO,
+    public String create(@ModelAttribute("location") Location location,
                          @RequestParam("file")MultipartFile multipartFile) throws IOException {
-        locationService.create(locationDTO, multipartFile);
+        locationService.create(location, multipartFile);
 
         return "redirect:/admin/control/locations";
     }
@@ -51,8 +49,8 @@ public class AdminLocationController {
     @GetMapping("/location/{name}/update")
     public String update(Model model,
                          @PathVariable("name") String name) {
-        LocationDTO locationDTO = locationService.getLocationDTOByName(name);
-        model.addAttribute("location", locationDTO);
+        Location location = locationService.getLocationByName(name);
+        model.addAttribute("location", location);
         return "adminLocationUpdateAndGetAll";
     }
 

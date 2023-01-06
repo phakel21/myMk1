@@ -65,6 +65,7 @@ body{
     transform: translate(-50%, 0);
     transition: all ease 0.3s;
 }
+
 .my-card:hover #hero{
     margin-top:10px;
     /*    margin-bottom: 5px;*/

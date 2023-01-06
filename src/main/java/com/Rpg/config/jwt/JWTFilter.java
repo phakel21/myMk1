@@ -1,9 +1,9 @@
 package com.Rpg.config.jwt;
 
-import com.Rpg.config.exception.NotFoundException;
 import com.Rpg.entity.MyUser;
 import com.Rpg.service.MyUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,58 +18,68 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 @Component
+@RequiredArgsConstructor
 public class JWTFilter extends GenericFilterBean {
 
-    private JWTProvider jwtProvider;
+    private final JWTProvider jwtProvider;
+    private final MyUserService myUserService;
 
-    private MyUserService myUserService;
-
-    private final String headerForAuth = "Authorization";
-
-    @Autowired
-    public JWTFilter(JWTProvider jwtProvider, MyUserService myUserService) {
-        this.jwtProvider = jwtProvider;
-        this.myUserService = myUserService;
-    }
-
-    private Cookie getCookie(HttpServletRequest httpServletRequest){
-        Cookie[] cookies = httpServletRequest.getCookies();
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals(headerForAuth)){
-                return cookie;
-            }
-        }throw new NotFoundException("fd");
-    }
+    @Value("${jwt.header}")
+    private String AUTHORIZATION;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        Cookie cookie = getCookie(httpServletRequest);
-        System.out.println(httpServletRequest.getUserPrincipal().getName());
-
-//        String token = httpServletRequest.getHeader(headerForAuth);
-        String token = cookie.getValue();
-        boolean validate = jwtProvider.validate(token);
-        if (validate) {
-            String loginFromToken = jwtProvider.getLoginFromToken(token);
-            MyUser myUser = myUserService.getMyUserByName(loginFromToken);
-            if (myUser == null) {
-                throw new com.Rpg.config.exception.NotFoundException("Cant fond");
+        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies != null) {
+            Cookie jwtCookie = null;
+            for (Cookie cookie : cookies) {
+                boolean authorization = cookie.getName().equals(AUTHORIZATION);
+                if (authorization)
+                    jwtCookie = cookie;
             }
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(myUser,
-                            null,
-                            Collections.singletonList(new SimpleGrantedAuthority(myUser.getRole().name())));
+            if (jwtCookie != null) {
+                String value = jwtCookie.getValue();
+                boolean validate = jwtProvider.validate(value);
+                if (!validate) {
+                    deleteCookie(cookies, httpServletResponse);
+                    throw new RuntimeException("Not Valid");
+                }
+                String loginFromToken = jwtProvider.getLoginFromToken(value);
+                MyUser myUserByLogin = myUserService.get(loginFromToken);
+                if (myUserByLogin == null) {
+                    throw new RuntimeException("Null");
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        myUserByLogin, null, Collections.singleton(new SimpleGrantedAuthority(myUserByLogin.getRole().name()))
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            }
         }
+
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
+    private void deleteCookie(Cookie[] cookies, HttpServletResponse response){
 
+        if (cookies != null) {
+
+            for (Cookie cookie : cookies) {
+                cookie.setValue(null);
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+
+        }
+    }
 
 }

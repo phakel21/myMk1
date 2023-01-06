@@ -1,3 +1,4 @@
+
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -25,6 +26,17 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
 
+            <div class="navbar-nav">
+                <a href="/user/update" class="nav-item nav-link ">Update User</a>
+            </div>
+
+            <div class="navbar-nav">
+                <a href="/hero/update" class="nav-item nav-link ">Update Hero</a>
+            </div>
+
+            <div class="navbar-nav">
+                <a href="/hero/choose" class="nav-item nav-link ">Choose Hero</a>
+            </div>
 
             <div class="navbar-nav ms-auto">
                 <sec:authorize access="isAuthenticated()">
@@ -40,36 +52,47 @@
     <div class="row">
 
         <div class="col">
+            <div class="row ">
+                <div class="col d-flex justify-content-center">
+
+                    <label class="col-form-label" style="font-size: 50px">Score : ${hero.score}</label>
+
+                </div>
+            </div>
             <div class="row">
                 <div class="col d-flex justify-content-center">
-                    <h3>${hero.name}</h3>
+
+                    <label class="col-form-label" style="font-size: 50px">Name : ${hero.name}</label>
+
                 </div>
 
             </div>
 
             <div class="row">
                 <div class="col d-flex justify-content-center">
+
                     <label class="my-card">
                         <div class="card-content">
                             <img id="back" src="/images/locations/back.jpg" alt="back" srcset=""/>
-                            <img id="hero" src="/images/myCharacters/${hero.myCharacterDTO.image}" alt="movies"
+                            <img id="hero" src="/images/characters/${hero.myCharacter.image}" alt="movies"
                                  srcset=""/>
                             <div class="content">
-                                <h4>${hero.myCharacterDTO.name}</h4>
-                                <p>HP : ${hero.myCharacterDTO.hp}</p>
-                                <p>MP : ${hero.myCharacterDTO.mp}</p>
-                                <p>Power : ${hero.myCharacterDTO.power}</p>
+                                <h4>${hero.myCharacter.name}</h4>
+                                <p>HP : ${hero.myCharacter.hp}</p>
+                                <p>MP : ${hero.myCharacter.mp}</p>
+                                <p>Power : ${hero.myCharacter.power}</p>
 
                             </div>
                         </div>
                     </label>
+
                 </div>
             </div>
 
             <div class="row">
                 <div class="col d-flex justify-content-center">
 
-                    <a href="/${hero.myUserDTO.login}/hero/${hero.name}/location/choose">
+                    <a href="/location/choose">
                         <button class="btn btn-primary">
                             Choose Location
                         </button>
@@ -80,9 +103,7 @@
 
         </div>
 
-
     </div>
-
 
 </div>
 </body>

@@ -32,7 +32,11 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto">
 
+                    <a href="/login" class="nav-item nav-link">Login</a>
+
+            </div>
         </div>
     </div>
 </nav>
@@ -40,7 +44,7 @@
 
 <div class=" d-flex justify-content-center">
     <form:form method="POST"
-               action="/registration" modelAttribute="myUserDTO">
+               action="/registration" modelAttribute="myUser">
 
         <div class="col-auto">
             <label for="login" class="col-form-label">Name</label>
@@ -76,59 +80,6 @@
     </form:form>
 
 </div>
-
-<%--<div class="header">--%>
-<%--<div class="header-right">--%>
-<%--<sec:authorize access="isAuthenticated()">--%>
-<%--<a href="/logout">Logout</a>--%>
-<%--</sec:authorize>--%>
-
-<%--<sec:authorize access="hasRole('ROLE_ADMIN')">--%>
-<%--<a href="/admin">Admin</a>--%>
-<%--</sec:authorize>--%>
-
-<%--<a href="/login">Login</a>--%>
-<%--<a href="/registration">Registration</a>--%>
-<%--</div>--%>
-
-<%--</div>--%>
-<%--<div class="container">--%>
-<%--<div class="row">--%>
-
-<%--<div class="d-flex justify-content-center">--%>
-<%--<div class="col-auto">--%>
-<%--<label for="a" class="col-form-label">Password</label>--%>
-<%--</div>--%>
-<%--<div class="col-auto">--%>
-<%--<input type="password" id="a" class="form-control" aria-describedby="passwordHelpInline">--%>
-<%--</div>--%>
-<%--<div class="col-auto">--%>
-<%--<span id="b" class="form-text">--%>
-<%--Must be 8-20 myCharacters long.--%>
-<%--</span>--%>
-<%--</div>--%>
-<%--</div>--%>
-<%--<form>--%>
-<%--<div class="mb-3">--%>
-<%--<label for="exampleInputEmail1" class="form-label">Email address</label>--%>
-<%--<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">--%>
-<%--<div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>--%>
-<%--</div>--%>
-<%--<div class="mb-3">--%>
-<%--<label for="exampleInputPassword1" class="form-label">Password</label>--%>
-<%--<input type="password" class="form-control" id="exampleInputPassword1">--%>
-<%--</div>--%>
-<%--<div class="mb-3 form-check">--%>
-<%--<input type="checkbox" class="form-check-input" id="exampleCheck1">--%>
-<%--<label class="form-check-label" for="exampleCheck1">Check me out</label>--%>
-<%--</div>--%>
-<%--<button type="submit" class="btn btn-primary">Submit</button>--%>
-<%--</form>--%>
-<%--<div class="col-sm-10 col-sm-offset-2"><form:errors path="checkPassword"/></div>--%>
-<%--<label for="passwordRepeat" class="control-label">Password repeat</label>--%>
-<%--</div>--%>
-
-<%--</div>--%>
 
 </body>
 

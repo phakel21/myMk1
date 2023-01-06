@@ -1,42 +1,36 @@
 package com.Rpg.controller;
 
-import com.Rpg.dto.LocationDTO;
-import com.Rpg.dto.MonsterDTO;
+import com.Rpg.entity.Location;
+import com.Rpg.entity.Monster;
 import com.Rpg.service.LocationService;
 import com.Rpg.service.MonsterService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/admin/control")
 @Controller
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class AdminMonsterController {
 
-    private MonsterService monsterService;
+    private final MonsterService monsterService;
 
-    private LocationService locationService;
-
-    @Autowired
-    public AdminMonsterController(MonsterService monsterService, LocationService locationService) {
-        this.monsterService = monsterService;
-        this.locationService = locationService;
-    }
+    private final LocationService locationService;
 
     @ModelAttribute("monster")
-    public MonsterDTO getModel() {
-        return new MonsterDTO();
+    public Monster getModel() {
+        return new Monster();
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+
     @GetMapping("/monsters")
     public String getAll(Model model) {
         model.addAttribute("locations", locationService.getAll());
@@ -44,13 +38,14 @@ public class AdminMonsterController {
         return "adminMonsterCreateAndGetAll";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+
     @PostMapping("/monsters")
-    public String create(@ModelAttribute("monster") MonsterDTO monsterDTO,
-                         @RequestParam(name = "chooseLocation") String chooseLocation,
+    public String create(@ModelAttribute("monster") Monster monster,
+                         @RequestParam String chooseLocation,
                          @RequestParam("file") MultipartFile multipartFile) throws IOException {
-        monsterDTO.setLocation(locationService.getLocationByName(chooseLocation));
-        monsterService.create(monsterDTO, multipartFile);
+        Location location = locationService.getLocationByName(chooseLocation);
+        monster.setLocation(location);
+        monsterService.create(monster, multipartFile);
         return "redirect:/admin/control/monsters";
     }
 
@@ -61,12 +56,12 @@ public class AdminMonsterController {
     }
 
     @GetMapping("/monster/{name}/update")
-    public String getOne(Model model,
+    public String update(Model model,
                          @PathVariable("name") String name) {
-        MonsterDTO monsterDTO = monsterService.getMonsterDTOByName(name);
-        model.addAttribute("monster", monsterDTO);
-        List<LocationDTO> locationDTOS = locationService.getAll();
-        model.addAttribute("locations", locationDTOS);
+        Monster monster = monsterService.getMonsterByName(name);
+        model.addAttribute("monster", monster);
+        List<Location> locations = locationService.getAll();
+        model.addAttribute("locations", locations);
         return "adminMonsterUpdateAndGetOne";
     }
 
@@ -93,8 +88,14 @@ public class AdminMonsterController {
 
     @PostMapping("/monster/{name}/update/power")
     public String updatePower(@PathVariable("name") String name,
-                              @RequestParam("updatePower") Integer updateLocation) {
-        monsterService.updatePower(name, updateLocation);
+                              @RequestParam Integer updatePower) {
+        monsterService.updatePower(name, updatePower);
+        return "redirect:/admin/control/monster/" + name + "/update";
+    }
+    @PostMapping("/monster/{name}/update/score")
+    public String updateScore(@PathVariable("name") String name,
+                              @RequestParam Integer updateScore) {
+        monsterService.updateScore(name, updateScore);
         return "redirect:/admin/control/monster/" + name + "/update";
     }
 

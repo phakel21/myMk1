@@ -32,6 +32,9 @@ public class Monster {
     @Column(name = "currentHp", nullable = false)
     private Integer currentHp;
 
+    @Column(name = "score", nullable = false)
+    private Integer score;
+
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
@@ -44,9 +47,5 @@ public class Monster {
         this.currentHp = hp;
     }
 
-    //    @PrePersist
-//    public void onCreate(){
-//        this.currentHp = monsterHP;
-//    }
 
 }

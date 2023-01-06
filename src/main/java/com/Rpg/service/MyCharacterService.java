@@ -1,6 +1,5 @@
 package com.Rpg.service;
 
-import com.Rpg.dto.MyCharacterDTO;
 import com.Rpg.entity.MyCharacter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,11 +8,11 @@ import java.util.List;
 
 public interface MyCharacterService {
 
-    void create(MyCharacterDTO myCharacterDTO, MultipartFile multipartFile) throws IOException;
+    void create(MyCharacter myCharacter, MultipartFile multipartFile) throws IOException;
 
     MyCharacter getMyCharacterByName(String name);
 
-    List<MyCharacterDTO> getAll();
+    List<MyCharacter> getAll();
 
     void updateName(String name, String updateName);
 
@@ -27,13 +26,4 @@ public interface MyCharacterService {
 
     void deleteByName(String name);
 
-//    MyCharacter map(MyCharacterDTO myCharacterDTO);
-
-    MyCharacterDTO getMyCharacterDTOByName(String name);
-
-//    MyCharacterDTO getOne(String name);
-
-//    MyCharacter getMyCharacter(String name);
-//
-//    MyCharacterDTO getMyCharacterDTOforUpdate(String name);
 }

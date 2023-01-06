@@ -1,86 +1,61 @@
 package com.Rpg.service.implement;
 
-import com.Rpg.config.exception.NotFoundException;
 import com.Rpg.config.exception.myUser.MyUserLoginBusyException;
 import com.Rpg.config.exception.myUser.MyUserNotFoundException;
 import com.Rpg.config.exception.myUser.PasswordDontMatchException;
-import com.Rpg.config.exception.myUser.WrongPasswordException;
 import com.Rpg.dto.MyUserDTO;
-import com.Rpg.entity.Role;
 import com.Rpg.entity.MyUser;
+import com.Rpg.entity.Role;
 import com.Rpg.repository.MyUserRepository;
 import com.Rpg.service.MyUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-////@Service("userDetailsService")
-//public class MyUserServiceImplement implements MyUserService, UserDetailsService {
+
+@RequiredArgsConstructor
 @Service
+@Transactional
 public class MyUserServiceImplement implements MyUserService{
 
-    private MyUserRepository myUserRepository;
+    private final MyUserRepository myUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public MyUserServiceImplement(MyUserRepository myUserRepository, PasswordEncoder passwordEncoder) {
-        this.myUserRepository = myUserRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    //CRUD methods work with repository
-
-    private MyUser save(MyUser MyUser) {
-        return myUserRepository.save(MyUser);
-    }
-
-    private MyUser findOne(String name) {
-        return myUserRepository.findByLogin(name);
-    }
-
-    private List<MyUser> findAll() {
-        return myUserRepository.findAll();
-    }
-
-    private void delete(String name) {
-        myUserRepository.deleteByLogin(name);
-    }
 
     //mappers
 
-    private MyUser map(MyUserDTO myUserDTO) {
-        MyUser MyUser = new MyUser();
-        MyUser.setLogin(myUserDTO.getLogin());
-        return MyUser;
-    }
-
+//    private MyUser map(MyUserDTO myUserDTO) {
+//        MyUser MyUser = new MyUser();
+//        MyUser.setLogin(myUserDTO.getLogin());
+//        return MyUser;
+//    }
+//
     private MyUserDTO map(MyUser MyUser) {
         if (MyUser == null) return null;
         MyUserDTO myUserDTO = new MyUserDTO();
         myUserDTO.setLogin(MyUser.getLogin());
         return myUserDTO;
     }
-
-    private List<MyUserDTO> map(List<MyUser> MyUsers) {
-        List<MyUserDTO> myUserDTOS = new ArrayList<>();
-        for (MyUser MyUser : MyUsers) {
-            myUserDTOS.add(map(MyUser));
-        }
-        return myUserDTOS;
-    }
+//
+//    private List<MyUserDTO> map(List<MyUser> MyUsers) {
+//        List<MyUserDTO> myUserDTOS = new ArrayList<>();
+//        for (MyUser MyUser : MyUsers) {
+//            myUserDTOS.add(map(MyUser));
+//        }
+//        return myUserDTOS;
+//    }
 
     //my methods
 
-//    @Override
+    //@Override
 //    public MyUser registration(MyUserDTO myUserDTO) {
 //        if (!registrationValidation(myUserDTO)) ;
 //        MyUser MyUser = new MyUser();
@@ -91,31 +66,74 @@ public class MyUserServiceImplement implements MyUserService{
 //        return save(MyUser);
 //    }
 
-    @Override
-    public MyUser getMyUserByName(String name) {
-        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(name);
+    private MyUser userExist(String username){
 
-        if (optionalMyUser.isPresent()) {
-            return optionalMyUser.get();
-        }
+        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(username);
 
-        throw new MyUserNotFoundException("User: " + name + " not found");
-    }
-
-//    @Override
-//    public List<MyUserDTO> getAll() {
-//        return map(findAll());
-//    }
-
-    @Override
-    public void deleteByName(String name) {
-
-        Optional<MyUser> optionalMyUser = myUserRepository.findMyUserByLogin(name);
         if (!optionalMyUser.isPresent()) {
-            throw new MyUserNotFoundException("User with name: " + name + " not found");
+            throw new MyUserNotFoundException("User with username: " + username + " not found");
         }
-        delete(name);
+
+        return optionalMyUser.get();
     }
+
+    @Override
+    public MyUser create(MyUserDTO myUserDTO) {
+
+        Optional<MyUser> myUserByLogin = myUserRepository.findMyUserByLogin(myUserDTO.getLogin());
+
+        if (myUserByLogin.isPresent()) {
+            throw new MyUserLoginBusyException("Login" + myUserDTO.getLogin() + "busy");
+        }
+
+        if (!myUserDTO.getPassword().equals(myUserDTO.getPasswordRepeat())) {
+            throw new PasswordDontMatchException("Password dont match");
+        }
+
+        MyUser myUser = new MyUser();
+        myUser.setLogin(myUserDTO.getLogin());
+        String encode = passwordEncoder.encode(myUserDTO.getPassword());
+        myUser.setPassword(encode);
+        myUser.setRole(Role.ROLE_USER);
+        return myUserRepository.save(myUser);
+
+    }
+
+    @Override
+    public MyUser get(String username) {
+
+        return userExist(username);
+    }
+
+    @Override
+    public List<MyUser> getAll() {
+        return myUserRepository.findAll();
+    }
+
+    @Override
+    public void updateLogin(String username, String newUsername) {
+        MyUser myUser = userExist(username);
+        myUser.setLogin(newUsername);
+        myUserRepository.save(myUser);
+    }
+
+    @Override
+    public void updatePassword(String username, String newPassword){
+        MyUser myUser = userExist(username);
+        String encodeNewPassword = passwordEncoder.encode(newPassword);
+        myUser.setPassword(encodeNewPassword);
+        myUserRepository.save(myUser);
+
+    }
+    @Override
+    public void delete(String username) {
+
+        MyUser myUser = userExist(username);
+
+        myUserRepository.delete(myUser);
+    }
+
+
 
 //    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
 //        MyUser byName = myUserRepository.findByLogin(s);
@@ -134,10 +152,7 @@ public class MyUserServiceImplement implements MyUserService{
 //        return true;
 //    }
 //
-    @Override
-    public MyUserDTO getMyUserDTOByName(String name) {
-        return map(getMyUserByName(name));
-    }
+
 //
 //    @Override
 //    public MyUserDTO getMyUserDTOforUpdate(String updateUser) {
@@ -147,34 +162,37 @@ public class MyUserServiceImplement implements MyUserService{
 
 
 
+
+
+//    @Override
+//    public MyUser getByLoginAndPassword(String login, String password){
+//        MyUser myUser = getMyUserByLogin(login);
+//        if(myUser == null){
+//            throw new NotFoundException("User with login "+ login + " not found");
+//        }
+//        boolean matches = passwordEncoder.matches(password, myUser.getPassword());
+//
+//        if(matches){
+//            return myUser;
+//        }
+//        throw new WrongPasswordException("Wrong password");
+//    }
+//
+//    @Override
+//    public MyUserDTO getCurrentMyUserDTO() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Object principal = authentication.getPrincipal();
+//        MyUser myUser = (MyUser) principal;
+//        String currentMyUserLogin = myUser.getLogin();
+//        return map(get(currentMyUserLogin));
+//    }
+
     @Override
-    public MyUser create(MyUserDTO myUserDTO) {
-        MyUser myUser = findOne(myUserDTO.getLogin());
-        if (myUser != null) {
-            throw new MyUserLoginBusyException("Login" + myUser.getLogin() + "busy");
-        }
-        if (!myUserDTO.getPassword().equals(myUserDTO.getPasswordRepeat())) {
-            throw new PasswordDontMatchException("Password dont match");
-        }
-        MyUser myUser1 = new MyUser();
-        myUser1.setLogin(myUserDTO.getLogin());
-        myUser1.setPassword(passwordEncoder.encode(myUserDTO.getPassword()));
-        myUser1.setRole(Role.ROLE_USER);
-        return save(myUser1);
-
-    }
-
-    @Override
-    public MyUser getByLoginAndPassword(String login, String password){
-        MyUser myUser = getMyUserByName(login);
-        if(myUser == null){
-            throw new NotFoundException("User with login "+ login + " not found");
-        }
-        boolean matches = passwordEncoder.matches(password, myUser.getPassword());
-
-        if(matches){
-            return myUser;
-        }
-        throw new WrongPasswordException("Wrong password");
+    public MyUser getCurrent() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        MyUser myUser = (MyUser) principal;
+        String currentMyUserLogin = myUser.getLogin();
+        return get(currentMyUserLogin);
     }
 }

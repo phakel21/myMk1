@@ -1,7 +1,7 @@
 package com.Rpg.service;
 
-import com.Rpg.dto.HeroDTO;
-import com.Rpg.dto.MonsterDTO;
+import com.Rpg.entity.Hero;
+import com.Rpg.entity.Location;
 import com.Rpg.entity.Monster;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface MonsterService {
 
-    void create(MonsterDTO monsterDTO, MultipartFile multipartFile) throws IOException;
+    void create(Monster monster, MultipartFile multipartFile) throws IOException;
 
     Monster getMonsterByName(String name);
 
-    List<MonsterDTO> getAll();
+    List<Monster> getAll();
 
     void updateName(String name, String updateName);
 
@@ -24,21 +24,23 @@ public interface MonsterService {
 
     void updatePower(String name, Integer updatePower);
 
+    void updateScore(String name, Integer updateScore);
+
     void updateLocation(String name, String updateLocation);
 
     void updateImage(String name, MultipartFile multipartFile) throws IOException;
 
     void deleteByName(String name);
 
-    void kick(HeroDTO hero, MonsterDTO monster);
+    void kick(Hero hero, Monster monster);
 
-    MonsterDTO monsterInMemory(List<MonsterDTO> monsterDTOS);
+    List<Monster> getMonstersByLocation(Location location);
 
-    void saving(MonsterDTO monsterDTO);
+    void chooseMonster(String name);
 
-    void monstersAlive(List<MonsterDTO> monsterDTOS);
+    Monster currentMonster();
 
-    MonsterDTO getMonsterDTOByName(String name);
+    List<Monster> unlockedMonsters();
 
-    List<MonsterDTO> getMonstersByLocationName(String name);
+    List<Monster> disableMonsters();
 }

@@ -7,20 +7,23 @@ import java.util.List;
 
 public interface MyUserService {
 
-//    MyUser registration(MyUserDTO myUserDTO);
-
-    MyUser getMyUserByName(String login);
-
-//    List<MyUserDTO> getAll();
-
-    void deleteByName(String name);
-
-    MyUserDTO getMyUserDTOByName(String name);
-
-
-//    MyUserDTO getMyUserDTOforUpdate(String updateUser);
-
     MyUser create(MyUserDTO myUserDTO);
 
-    MyUser getByLoginAndPassword(String login, String password);
+    MyUser get(String login);
+
+    List<MyUser> getAll();
+
+    void updateLogin(String login, String newLogin);
+    void updatePassword(String login,String password);
+
+    void delete(String name);
+
+//    MyUserDTO getMyUserDTOByLogin(String login);
+//
+//
+//    MyUser getByLoginAndPassword(String login, String password);
+//
+//    MyUserDTO getCurrentMyUserDTO();
+    MyUser getCurrent();
+
 }

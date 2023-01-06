@@ -1,0 +1,134 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 90%;
+    width: 800px;
+    margin: 0 auto;
+}
+
+.my-card {
+    position: relative;
+    height: 400px;
+    width: 240px;
+    margin: 10px;
+}
+
+.my-card:active {
+    transform: scale(0.96);
+}
+
+.my-card input {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.my-card input:checked ~ .card-content {
+    border-color: #4880E5;
+}
+
+.my-card .card-content {
+    position: relative;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border: 4px solid gray;
+    border-radius: 12px;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.02);
+
+}
+
+.test {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.test1 {
+    position: relative;
+    /*height: 100%;*/
+    /*width: 100%;*/
+    margin-top: 120px;
+    /*position: relative;*/
+    height: 200px;
+    width: 150px;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.content h4 {
+    margin: 0 0 8px 0;
+}
+
+.content p {
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.content {
+    position: relative;
+    bottom: -400px;
+    width: 100%;
+    height: 400px;
+    /*padding: px;*/
+    /*    background-color: white;*/
+    transition: all ease 0.4s;
+}
+
+.my-card:hover .content {
+    bottom: -50px;
+
+}
+
+.my-card input ~ .card-content .yx {
+    opacity: 0.6;
+}
+
+.my-card input:hover ~ .card-content .yx {
+    opacity: 1;
+}
+
+.my-card input:checked ~ .card-content .yx {
+    opacity: 1;
+}
+
+/*.card input:checked ~ .card-content #back{*/
+/*opacity: 1;*/
+/*}*/
+/*.card input:hover ~ .card-content #back{*/
+/*opacity: 1;*/
+/*}*/
+
+.my-card .yx {
+    margin-top: 180px;
+    position: absolute;
+    /*    height: 200px;*/
+    /*    width: 150px;*/
+    left: 50%;
+    transform: translate(-50%, 0);
+    transition: all ease 0.3s;
+}
+
+.my-card:hover .yx {
+    left: 50%;
+    margin-top: 10px;
+    /*    margin-bottom: 5px;*/
+    /*    width: 200px;*/
+    /*    height: 300px;*/
+}
+
+.lmm {
+    text-align: center;
+}

@@ -1,39 +1,36 @@
 package com.Rpg.service;
 
-import com.Rpg.dto.HeroDTO;
-import com.Rpg.dto.MonsterDTO;
+import com.Rpg.entity.Hero;
+import com.Rpg.entity.Monster;
 
 import java.util.List;
 
 public interface HeroService {
 
-    void create(HeroDTO heroDTO);
+    void create(Hero hero);
 
-    HeroDTO getHeroDTOByName(String name);
+    Hero getHero(String name);
 
-    List<HeroDTO> getAll();
+    List<Hero> getAll();
 
     void updateName(String name, String editName);
+
+    void updateName(String newName);
 
     void updateCharacter(String name, String editCharacter);
 
     void updateUser(String name, String updateUser);
 
-    void deleteByName(String name);
+    void delete();
+    void delete(String name);
 
-    List<HeroDTO> getHeroesByUserName(String name);
 
-    void kick(HeroDTO heroDTO, MonsterDTO monster);
+    void kick(Hero hero, Monster monster);
 
-    void saving(HeroDTO heroDTO);
+    void chooseHero(String name);
 
-    void heroAlive(HeroDTO heroDTO);
+    Hero getCurrentHero();
 
-    HeroDTO findHeroByMyUserAndName(String myUserName, String name);
+    List<Hero> getHeroesByUser();
 
-    //    HeroDTO getByName(String name);
-
-//    void createTest(HeroDTO heroDTO);
-
-    //    Hero get(String name);
 }

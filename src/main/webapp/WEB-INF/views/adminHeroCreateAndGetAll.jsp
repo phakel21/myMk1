@@ -138,11 +138,11 @@
             <tr>
                 <td>${hero.name}</td>
 
-                <td><a href="/admin/control/hero/${hero.myCharacterDTO.name}/edit">
-                        ${hero.myCharacterDTO.name}
+                <td><a href="/admin/control/hero/${hero.myCharacter.name}/edit">
+                        ${hero.myCharacter.name}
                 </a></td>
 
-                <td>${hero.myUserDTO.login}</td>
+                <td>${hero.myUser.login}</td>
 
                 <td>
 

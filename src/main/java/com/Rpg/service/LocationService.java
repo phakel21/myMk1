@@ -1,6 +1,5 @@
 package com.Rpg.service;
 
-import com.Rpg.dto.LocationDTO;
 import com.Rpg.entity.Location;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,11 +8,11 @@ import java.util.List;
 
 public interface LocationService {
 
-    void create(LocationDTO locationDTO, MultipartFile multipartFile) throws IOException;
+    void create(Location location, MultipartFile multipartFile) throws IOException;
 
     Location getLocationByName(String name);
 
-    List<LocationDTO> getAll();
+    List<Location> getAll();
 
     void updateName(String name, String updateName);
 
@@ -21,5 +20,7 @@ public interface LocationService {
 
     void deleteByName(String name);
 
-    LocationDTO getLocationDTOByName(String name);
+    void chooseLocation(String name);
+
+    Location currentLocation();
 }

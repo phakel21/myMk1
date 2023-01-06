@@ -1,41 +1,33 @@
 package com.Rpg.controller;
 
-import com.Rpg.service.HeroService;
 import com.Rpg.service.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping("{userName}/hero/{heroName}/location")
+@RequestMapping("/location")
 @Controller
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_USER')")
 public class LocationController {
 
-    private LocationService locationService;
-
-    private HeroService heroService;
-
-    @Autowired
-    public LocationController(LocationService locationService, HeroService heroService) {
-        this.locationService = locationService;
-        this.heroService = heroService;
-    }
+    private final LocationService locationService;
 
     @GetMapping("/choose")
-    public String choose(Model model,
-                         @PathVariable("heroName") String heroName,
-                         @PathVariable("userName") String userName) {
-        model.addAttribute("userName", userName);
-        model.addAttribute("heroName", heroName);
+    public String choose(Model model) {
         model.addAttribute("locations", locationService.getAll());
         return "chooseLocation";
     }
 
     @PostMapping("/choose")
-    public String choose(@PathVariable("heroName") String heroName,
-                         @PathVariable("userName") String userName,
-                         @RequestParam(name = "chooseLocation") String chooseLocation) {
-        return "redirect:/" + userName + "/hero/" + heroName + "/location/" + chooseLocation + "/fight";
+    public String choose(@RequestParam String chooseLocation) {
+        locationService.chooseLocation(chooseLocation);
+        return "redirect:/monster/choose";
     }
 
 }

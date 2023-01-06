@@ -11,6 +11,7 @@ import com.Rpg.service.ImageService;
 import com.Rpg.service.MyCharacterService;
 import com.Rpg.validator.myCharacter.create.MyCharacterCreateValidator;
 import com.Rpg.validator.myCharacter.update.MyCharacterUpdateValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -24,85 +25,56 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class MyCharacterServiceImplement implements MyCharacterService {
 
     @Value("${characters}")
     private String charactersPath;
 
-    private MyCharacterRepository myCharacterRepository;
+    private final MyCharacterRepository myCharacterRepository;
 
-    private ImageService imageService;
+    private final ImageService imageService;
 
-    private List<MyCharacterCreateValidator> myCharacterCreateValidators;
+    private final List<MyCharacterCreateValidator> myCharacterCreateValidators;
 
-    private List<MyCharacterUpdateValidator> myCharacterUpdateValidators;
-
-    @Autowired
-    public MyCharacterServiceImplement(@Lazy MyCharacterRepository myCharacterRepository,
-                                       ImageService imageService,
-                                       List<MyCharacterCreateValidator> myCharacterCreateValidators,
-                                       List<MyCharacterUpdateValidator> myCharacterUpdateValidators) {
-        this.myCharacterRepository = myCharacterRepository;
-        this.imageService = imageService;
-        this.myCharacterCreateValidators = myCharacterCreateValidators;
-        this.myCharacterUpdateValidators = myCharacterUpdateValidators;
-    }
-
-    //CRUD methods work with repository
-
-    private void save(MyCharacter myCharacter) {
-        myCharacterRepository.save(myCharacter);
-    }
-
-    private MyCharacter findOne(String name) {
-        return myCharacterRepository.findByName(name);
-    }
-
-    private List<MyCharacter> findAll() {
-        return myCharacterRepository.findAll();
-    }
-
-    private void delete(String name) {
-        myCharacterRepository.deleteByName(name);
-    }
+    private final List<MyCharacterUpdateValidator> myCharacterUpdateValidators;
 
 
-    //mappers
-
-    private MyCharacter map(MyCharacterDTO myCharacterDTO) {
-        MyCharacter myCharacter = new MyCharacter();
-        myCharacter.setName(myCharacterDTO.getName());
-        myCharacter.setHp(myCharacterDTO.getHp());
-        myCharacter.setMp(myCharacterDTO.getMp());
-        myCharacter.setPower(myCharacterDTO.getPower());
-        myCharacter.setImage(myCharacterDTO.getImage());
-        return myCharacter;
-    }
-
-    private MyCharacterDTO map(MyCharacter myCharacter) {
-        MyCharacterDTO myCharacterDTO = new MyCharacterDTO();
-        myCharacterDTO.setName(myCharacter.getName());
-        myCharacterDTO.setHp(myCharacter.getHp());
-        myCharacterDTO.setMp(myCharacter.getMp());
-        myCharacterDTO.setPower(myCharacter.getPower());
-        myCharacterDTO.setImage(myCharacter.getImage());
-        return myCharacterDTO;
-    }
-
-    private List<MyCharacterDTO> map(List<MyCharacter> myCharacters) {
-        List<MyCharacterDTO> myCharacterDTOS = new ArrayList<>();
-        for (MyCharacter myCharacter : myCharacters) {
-            myCharacterDTOS.add(map(myCharacter));
-        }
-        return myCharacterDTOS;
-    }
+//    //mappers
+//
+//    private MyCharacter map(MyCharacterDTO myCharacterDTO) {
+//        MyCharacter myCharacter = new MyCharacter();
+//        myCharacter.setName(myCharacterDTO.getName());
+//        myCharacter.setHp(myCharacterDTO.getHp());
+//        myCharacter.setMp(myCharacterDTO.getMp());
+//        myCharacter.setPower(myCharacterDTO.getPower());
+//        myCharacter.setImage(myCharacterDTO.getImage());
+//        return myCharacter;
+//    }
+//
+//    private MyCharacterDTO map(MyCharacter myCharacter) {
+//        MyCharacterDTO myCharacterDTO = new MyCharacterDTO();
+//        myCharacterDTO.setName(myCharacter.getName());
+//        myCharacterDTO.setHp(myCharacter.getHp());
+//        myCharacterDTO.setMp(myCharacter.getMp());
+//        myCharacterDTO.setPower(myCharacter.getPower());
+//        myCharacterDTO.setImage(myCharacter.getImage());
+//        return myCharacterDTO;
+//    }
+//
+//    private List<MyCharacterDTO> map(List<MyCharacter> myCharacters) {
+//        List<MyCharacterDTO> myCharacterDTOS = new ArrayList<>();
+//        for (MyCharacter myCharacter : myCharacters) {
+//            myCharacterDTOS.add(map(myCharacter));
+//        }
+//        return myCharacterDTOS;
+//    }
 
     //my methods
 
     @Override
-    public void create(MyCharacterDTO myCharacterDTO, MultipartFile multipartFile) throws IOException {
-
-        MyCharacter myCharacter = map(myCharacterDTO);
+    public void create(MyCharacter myCharacter, MultipartFile multipartFile) throws IOException {
 
         checkMyCharacterExist(myCharacter.getName());
 
@@ -113,7 +85,7 @@ public class MyCharacterServiceImplement implements MyCharacterService {
         String resultFileName = imageService.saveFile(charactersPath, multipartFile);
         myCharacter.setImage(resultFileName);
 
-        save(myCharacter);
+        myCharacterRepository.save(myCharacter);
     }
 
     @Override
@@ -121,16 +93,18 @@ public class MyCharacterServiceImplement implements MyCharacterService {
 
         Optional<MyCharacter> optionalMyCharacter = myCharacterRepository.findMyCharacterByName(name);
 
-        if (optionalMyCharacter.isPresent()) {
-            return optionalMyCharacter.get();
+        if (!optionalMyCharacter.isPresent()) {
+            throw new MyCharacterNotFoundException("Character: " + name + " not found");
         }
 
-        throw new MyCharacterNotFoundException("Character: " + name + " not found");
+        return optionalMyCharacter.get();
+
+
     }
 
     @Override
-    public List<MyCharacterDTO> getAll() {
-        return map(findAll());
+    public List<MyCharacter> getAll() {
+        return myCharacterRepository.findAll();
     }
 
     private void update(MyCharacter myCharacter) {
@@ -138,50 +112,51 @@ public class MyCharacterServiceImplement implements MyCharacterService {
         for (MyCharacterUpdateValidator myCharacterUpdateValidator : myCharacterUpdateValidators) {
             myCharacterUpdateValidator.validate(myCharacter);
         }
-        save(myCharacter);
+        myCharacterRepository.save(myCharacter);
 
     }
 
     @Override
     public void updateName(String name, String updateName) {
         checkMyCharacterExist(updateName);
-        MyCharacter myCharacter = findOne(name);
+        MyCharacter myCharacter = myCharacterRepository.findByName(name);
         myCharacter.setName(updateName);
         update(myCharacter);
     }
 
     @Override
     public void updateHp(String name, Integer updateHp) {
-        MyCharacter myCharacter = findOne(name);
+        MyCharacter myCharacter = myCharacterRepository.findByName(name);
         myCharacter.setHp(updateHp);
         update(myCharacter);
     }
 
     @Override
     public void updateMp(String name, Integer updateMp) {
-        MyCharacter myCharacter = findOne(name);
+        MyCharacter myCharacter = myCharacterRepository.findByName(name);
         myCharacter.setMp(updateMp);
         update(myCharacter);
     }
 
     @Override
     public void updatePower(String name, Integer updatePower) {
-        MyCharacter myCharacter = findOne(name);
+        MyCharacter myCharacter = myCharacterRepository.findByName(name);
         myCharacter.setPower(updatePower);
         update(myCharacter);
     }
 
     @Override
     public void updateImage(String name, MultipartFile multipartFile) throws IOException {
-        MyCharacter myCharacter = findOne(name);
+        MyCharacter myCharacter = myCharacterRepository.findByName(name);
+
         imageService.deleteFile(charactersPath, myCharacter.getImage());
 
-        myCharacter.setImage(imageService.saveFile(charactersPath, multipartFile));
+        String image = imageService.saveFile(charactersPath, multipartFile);
+        myCharacter.setImage(image);
         update(myCharacter);
     }
 
     @Override
-    @Transactional
     public void deleteByName(String name) {
         Optional<MyCharacter> optionalMonster = myCharacterRepository.findMyCharacterByName(name);
 
@@ -189,14 +164,14 @@ public class MyCharacterServiceImplement implements MyCharacterService {
             throw new MyCharacterNotFoundException("MyCharacter not found");
         }
 
-        imageService.deleteFile(charactersPath, findOne(name).getImage());
-        delete(name);
+        MyCharacter myCharacter = myCharacterRepository.findByName(name);
+
+        String image = myCharacter.getImage();
+
+        imageService.deleteFile(charactersPath, image);
+        myCharacterRepository.delete(myCharacter);
     }
 
-    @Override
-    public MyCharacterDTO getMyCharacterDTOByName(String name) {
-        return map(getMyCharacterByName(name));
-    }
 
     private void checkMyCharacterExist(String name) {
         if (myCharacterRepository.existsMyCharacterByName(name)) {
@@ -204,35 +179,4 @@ public class MyCharacterServiceImplement implements MyCharacterService {
         }
     }
 
-
-    //    @Override
-//    public MyCharacter get(String name) {
-//        return map(getMyCharacterByName(name));
-//    }
-    //    @Override
-//    public MyCharacterDTO getByName(String name) {
-//        return map(findOne(name));
-//    }
-
-//    @Override
-//    public MyCharacter getMyCharacter(String name) {
-//        Optional<MyCharacter> optionalMyCharacter = myCharacterRepository.findMyCharacterByName(name);
-//        if(optionalMyCharacter.isPresent()){
-//            return optionalMyCharacter.get();
-//        }
-//        throw new MyCharacterNotFoundException("Character: "+ name +" not found");
-//    }
-//
-//
-//    @Override
-//    public MyCharacterDTO getMyCharacterDTOforUpdate(String name) {
-//        MyCharacterDTO myCharacterDTO;
-//        Optional<MyCharacter> myCharacterOptional = myCharacterRepository.findMyCharacterByName(name);
-//        if(!myCharacterOptional.isPresent()){
-//            throw new HeroDontHaveMyCharacterException("");
-//        }
-//
-//        return map(myCharacterOptional.get());
-//
-//    }
 }
