@@ -2,6 +2,7 @@ package com.Rpg.config.jwt;
 
 import com.Rpg.entity.MyUser;
 import com.Rpg.service.MyUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,12 +17,11 @@ import java.io.IOException;
 import java.util.Collections;
 
 @Component
+@RequiredArgsConstructor
 public class MyFilter extends GenericFilter {
 
     private final MyUserService myUserService;
-
     private final MyProvider myProvider;
-
     private final JWTProvider jwtProvider;
 
     @Value("${jwt.header}")
@@ -33,12 +33,6 @@ public class MyFilter extends GenericFilter {
     @Value("${header.password}")
     private String HEADER_PASSWORD;
 
-    public MyFilter(MyUserService myUserService, MyProvider myProvider, JWTProvider jwtProvider) {
-        this.myUserService = myUserService;
-        this.myProvider = myProvider;
-        this.jwtProvider = jwtProvider;
-    }
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
@@ -48,6 +42,7 @@ public class MyFilter extends GenericFilter {
         String password = httpServletRequest.getParameter(HEADER_PASSWORD);
 
         if (username != null && password != null) {
+
             boolean validate = myProvider.validate(username, password);
             MyUser myUserByLogin = myUserService.get(username);
             if (!validate) {

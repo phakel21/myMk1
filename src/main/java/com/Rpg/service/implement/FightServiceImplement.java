@@ -8,6 +8,8 @@ import com.Rpg.service.MonsterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 public class FightServiceImplement implements FightService {
@@ -21,5 +23,12 @@ public class FightServiceImplement implements FightService {
         if (monster.getCurrentHp() > 0) {
             heroService.kick(hero, monster);
         }
+    }
+
+    @Override
+    public void heal() {
+        Hero currentHero = heroService.getCurrentHero();
+        currentHero.setCurrentHp(currentHero.getCurrentHp() + 10);
+        currentHero.setCurrentHp(currentHero.getCurrentHp() - (int)(Math.random() * 100 - 1 + 1)- 1);
     }
 }

@@ -57,6 +57,8 @@ public class FightController {
 
         if (choose.equals("kick")) {
             fightService.fight(hero, monster);
+        } else if (choose.equals("heal")) {
+            fightService.heal();
         }
 
         if (hero.getCurrentHp() > 0 && monster.getCurrentHp() <= 0) {

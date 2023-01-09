@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -36,50 +37,72 @@ public class JWTFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         Cookie[] cookies = httpServletRequest.getCookies();
-        if (cookies != null) {
-            Cookie jwtCookie = null;
-            for (Cookie cookie : cookies) {
-                boolean authorization = cookie.getName().equals(AUTHORIZATION);
-                if (authorization)
-                    jwtCookie = cookie;
-            }
 
-            if (jwtCookie != null) {
-                String value = jwtCookie.getValue();
-                boolean validate = jwtProvider.validate(value);
-                if (!validate) {
-                    deleteCookie(cookies, httpServletResponse);
-                    throw new RuntimeException("Not Valid");
-                }
-                String loginFromToken = jwtProvider.getLoginFromToken(value);
-                MyUser myUserByLogin = myUserService.get(loginFromToken);
-                if (myUserByLogin == null) {
-                    throw new RuntimeException("Null");
+        Optional<Cookie[]> optionalCookies = Optional.ofNullable(cookies);
 
-                }
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        myUserByLogin, null, Collections.singleton(new SimpleGrantedAuthority(myUserByLogin.getRole().name()))
-                );
-                SecurityContextHolder.getContext().setAuthentication(auth);
+        optionalCookies.flatMap(arrayCookie -> Arrays
+                .stream(arrayCookie)
+                .filter(cookie -> cookie.getName().equals(AUTHORIZATION) && jwtProvider.validate(cookie.getValue()))
+                .findFirst()).ifPresent(cookie -> {
+            String loginFromToken = jwtProvider.getLoginFromToken(cookie.getValue());
+            MyUser myUser = myUserService.get(loginFromToken);
 
-            }
-        }
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                    myUser, null, Collections.singleton(new SimpleGrantedAuthority(myUser.getRole().name()))
+            );
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        });
+
+        //todo: 1.check cookies not null
+        //      2.if not null find with name Auth
+        //      3.Check value not null
+        //      4.If not null get value
+        //      5.Validate value
+        //      6.If not valid delete all cookies
+        //      7.If valid setAuth
+
+//        if (cookies != null) {
+//            Cookie jwtCookie = null;
+//
+//            for (Cookie cookie : cookies) {
+//                boolean authorization = cookie.getName().equals(AUTHORIZATION);
+//                if (authorization)
+//                    jwtCookie = cookie;
+//            }
+//
+//
+//            if (jwtCookie != null) {
+//                String value = jwtCookie.getValue();
+//                boolean validate = jwtProvider.validate(value);
+//                if (!validate) {
+//                    deleteCookie(cookies, httpServletResponse);
+//                    throw new RuntimeException("Not Valid");
+//                }
+//                String loginFromToken = jwtProvider.getLoginFromToken(value);
+//                MyUser myUserByLogin = myUserService.get(loginFromToken);
+//                if (myUserByLogin == null) {
+//                    throw new RuntimeException("Null");
+//
+//                }
+//                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+//                        myUserByLogin, null, Collections.singleton(new SimpleGrantedAuthority(myUserByLogin.getRole().name()))
+//                );
+//                SecurityContextHolder.getContext().setAuthentication(auth);
+//
+//            }
+//        }
 
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    private void deleteCookie(Cookie[] cookies, HttpServletResponse response){
+    private void deleteCookie(Cookie[] cookies, HttpServletResponse response) {
 
-        if (cookies != null) {
-
-            for (Cookie cookie : cookies) {
-                cookie.setValue(null);
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
-            }
-
-        }
+        Arrays.stream(Optional.ofNullable(cookies).orElseThrow(RuntimeException::new))
+                .forEach(cookie -> {
+                    cookie.setValue(null);
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                });
     }
-
 }

@@ -9,4 +9,5 @@ public interface FightService {
 
     void fight(Hero hero, Monster monster);
 
+    void heal();
 }

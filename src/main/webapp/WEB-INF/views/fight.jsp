@@ -73,7 +73,7 @@
 <div class="d-flex justify-content-center">
     <form method="POST">
         <button class="btn btn-success btn-lg" name="choose" value="kick">Kick</button>
-        <button class="btn btn-success btn-lg" name="choose" value="kick">Heal</button>
+        <button class="btn btn-success btn-lg" name="choose" value="heal">Heal</button>
     </form>
 </div>
 

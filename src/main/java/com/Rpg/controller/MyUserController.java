@@ -1,6 +1,5 @@
 package com.Rpg.controller;
 
-import com.Rpg.dto.MyUserDTO;
 import com.Rpg.entity.MyUser;
 import com.Rpg.service.MyUserService;
 import lombok.RequiredArgsConstructor;
